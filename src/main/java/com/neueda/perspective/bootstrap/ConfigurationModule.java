@@ -5,15 +5,15 @@ import com.neueda.perspective.config.AppCfg;
 
 class ConfigurationModule extends AbstractModule {
 
-    private final AppCfg app;
+    private final AppCfg appCfg;
 
-    public ConfigurationModule(AppCfg app) {
-        this.app = app;
+    public ConfigurationModule(AppCfg appCfg) {
+        this.appCfg = appCfg;
     }
 
     @Override
     protected void configure() {
-        bind(AppCfg.class).toInstance(app);
+        bind(AppCfg.class).toInstance(appCfg);
     }
 
 }

@@ -1,17 +1,18 @@
 package com.neueda.perspective.config;
 
-public class XMPPCfg {
+public class XmppCfg {
 
-    private String chat;
+    private String host;
     private String conf;
     private int port;
+    private String username;
 
-    public String getChat() {
-        return chat;
+    public String getHost() {
+        return host;
     }
 
-    public void setChat(String chat) {
-        this.chat = chat;
+    public void setHost(String host) {
+        this.host = host;
     }
 
     public String getConf() {
@@ -28,6 +29,14 @@ public class XMPPCfg {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
 }

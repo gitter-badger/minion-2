@@ -2,13 +2,13 @@ package com.neueda.perspective.config;
 
 public class AppCfg {
 
-    private XMPPCfg xmpp;
+    private XmppCfg xmpp;
 
-    public XMPPCfg getXmpp() {
+    public XmppCfg getXmpp() {
         return xmpp;
     }
 
-    public void setXmpp(XMPPCfg xmpp) {
+    public void setXmpp(XmppCfg xmpp) {
         this.xmpp = xmpp;
     }
 

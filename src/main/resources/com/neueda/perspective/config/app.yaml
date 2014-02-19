@@ -1,4 +1,5 @@
 xmpp:
-  chat: chat.hipchat.com
+  host: chat.hipchat.com
   conf: conf.hipchat.com
   port: 5222
+  username: 65124_628959@chat.hipchat.com
