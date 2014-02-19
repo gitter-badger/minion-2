@@ -1,0 +1,4 @@
+xmpp:
+  chat: chat.hipchat.com
+  conf: conf.hipchat.com
+  port: 5222
