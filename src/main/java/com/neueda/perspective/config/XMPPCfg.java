@@ -5,7 +5,7 @@ public class XmppCfg {
     private String host;
     private String conf;
     private int port;
-    private String username;
+    private String jid;
 
     public String getHost() {
         return host;
@@ -31,12 +31,12 @@ public class XmppCfg {
         this.port = port;
     }
 
-    public String getUsername() {
-        return username;
+    public String getJid() {
+        return jid;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setJid(String jid) {
+        this.jid = jid;
     }
 
 }

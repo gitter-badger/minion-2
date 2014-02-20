@@ -6,7 +6,8 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.neueda.perspective.config.AppCfg;
-import com.neueda.perspective.xmpp.XmppConnector;
+import com.neueda.perspective.hipchat.HipChat;
+import com.neueda.perspective.hipchat.XmppConnector;
 
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -16,18 +17,21 @@ import java.net.URL;
 public class Application {
 
     private final XmppConnector xmppConnector;
+    private final HipChat hipChat;
 
     @Inject
-    private Application(XmppConnector xmppConnector) {
+    private Application(XmppConnector xmppConnector,
+                        HipChat hipChat) {
         this.xmppConnector = xmppConnector;
+        this.hipChat = hipChat;
     }
 
     public static void main(String[] args) throws Exception {
-        SerializationModule serializationModule = new SerializationModule();
-        ObjectMapper objectMapper = serializationModule.providesYamlObjectMapper();
+        CommunicationModule communicationModule = new CommunicationModule();
+        ObjectMapper objectMapper = communicationModule.providesYamlObjectMapper();
         AppCfg appCfg = loadConfiguration(objectMapper);
         Injector injector = Guice.createInjector(
-                serializationModule,
+                communicationModule,
                 new ConfigurationModule(appCfg),
                 new ExecutorModule()
         );
@@ -44,6 +48,7 @@ public class Application {
 
     private void start() {
         xmppConnector.connect();
+        hipChat.getRooms();
     }
 
     private void stop() {

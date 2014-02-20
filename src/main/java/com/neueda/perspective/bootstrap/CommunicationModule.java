@@ -5,12 +5,15 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
 import javax.inject.Named;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 
-public class SerializationModule extends AbstractModule {
+public class CommunicationModule extends AbstractModule {
 
     @Override
     protected void configure() {
@@ -33,6 +36,13 @@ public class SerializationModule extends AbstractModule {
         objectMapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return objectMapper;
+    }
+
+    @Provides
+    Client providesRestClient(ObjectMapper objectMapper) {
+        return ClientBuilder.newBuilder()
+                .register(new JacksonJsonProvider(objectMapper))
+                .build();
     }
 
 }

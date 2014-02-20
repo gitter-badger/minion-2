@@ -1,4 +1,4 @@
-package com.neueda.perspective.xmpp;
+package com.neueda.perspective.hipchat;
 
 import com.google.common.base.Throwables;
 import com.neueda.perspective.config.AppCfg;
@@ -32,7 +32,8 @@ public class XmppConnector implements MessageListener {
         ConnectionConfiguration config = new ConnectionConfiguration(host, port);
         xmpp = new XMPPConnection(config);
         conf = xmppCfg.getConf();
-        username = xmppCfg.getUsername();
+        String jid = xmppCfg.getJid();
+        username = String.format("%s@%s", jid, host);
         this.scheduler = scheduler;
     }
 
@@ -74,5 +75,9 @@ public class XmppConnector implements MessageListener {
 
     @Override
     public void processMessage(Chat chat, Message message) {
+        String from = message.getFrom();
+        String body = message.getBody();
+        logger.info("Message from {}: {}", from, body);
     }
+
 }
