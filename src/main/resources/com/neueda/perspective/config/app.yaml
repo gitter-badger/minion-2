@@ -7,3 +7,6 @@ xmpp:
     - 65124_off_topic
 hipChat:
   target: https://api.hipchat.com
+bot:
+  ext:
+    - reverse

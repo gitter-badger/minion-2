@@ -5,9 +5,8 @@ import com.google.common.io.Resources;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.neueda.perspective.bot.Bot;
 import com.neueda.perspective.config.AppCfg;
-import com.neueda.perspective.hipchat.HipChat;
-import com.neueda.perspective.hipchat.XmppConnector;
 
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -16,14 +15,11 @@ import java.net.URL;
 @Singleton
 public class Application {
 
-    private final XmppConnector xmppConnector;
-    private final HipChat hipChat;
+    private final Bot bot;
 
     @Inject
-    private Application(XmppConnector xmppConnector,
-                        HipChat hipChat) {
-        this.xmppConnector = xmppConnector;
-        this.hipChat = hipChat;
+    private Application(Bot bot) {
+        this.bot = bot;
     }
 
     public static void main(String[] args) throws Exception {
@@ -47,12 +43,11 @@ public class Application {
     }
 
     private void start() {
-        xmppConnector.connect();
-        hipChat.getRooms();
+        bot.start();
     }
 
     private void stop() {
-        xmppConnector.shutdown();
+        bot.shutdown();
     }
 
 }
