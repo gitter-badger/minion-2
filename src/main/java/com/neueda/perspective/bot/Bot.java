@@ -1,10 +1,12 @@
 package com.neueda.perspective.bot;
 
 import com.neueda.perspective.bot.ext.Extension;
-import com.neueda.perspective.bot.ext.ExtensionLoader;
+import com.neueda.perspective.bot.ext.ExtensionLoaderFactory;
 import com.neueda.perspective.bot.ext.result.ExtensionResult;
+import com.neueda.perspective.config.AppCfg;
 import com.neueda.perspective.hipchat.HipChat;
 import com.neueda.perspective.hipchat.XmppConnector;
+import com.neueda.perspective.hipchat.dto.UserObject;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.XMPPException;
@@ -23,18 +25,25 @@ public class Bot implements MessageListener {
     private final XmppConnector xmpp;
     private final HipChat hipChat;
     private final List<Extension> extensions;
+    private final String email;
+    private final List<String> rooms;
 
     @Inject
     public Bot(XmppConnector xmpp,
                HipChat hipChat,
-               ExtensionLoader loader) {
+               AppCfg cfg,
+               ExtensionLoaderFactory loaderFactory) {
         this.xmpp = xmpp;
         this.hipChat = hipChat;
-        extensions = loader.load();
+        email = cfg.getHipChat().getEmail();
+        List<String> ext = cfg.getBot().getExt();
+        rooms = cfg.getXmpp().getRooms();
+        extensions = loaderFactory.create(ext).load();
     }
 
     public void start() {
-        xmpp.connect();
+        UserObject user = hipChat.getUser(email);
+        xmpp.connect(user.getName(), rooms);
     }
 
     public void shutdown() {

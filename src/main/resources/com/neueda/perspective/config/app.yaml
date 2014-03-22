@@ -4,9 +4,10 @@ xmpp:
   port: 5222
   jid: 65124_628959
   rooms:
-    - 65124_off_topic
+    - 65124_xmpp_bot
 hipChat:
   target: https://api.hipchat.com
+  email: riga.robot@neueda.com
 bot:
   ext:
     - reverse

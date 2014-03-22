@@ -31,6 +31,11 @@
             <version>${guice.version}</version>
             <classifier>no_aop</classifier>
         </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-assistedinject</artifactId>
+            <version>${guice.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.igniterealtime.smack</groupId>

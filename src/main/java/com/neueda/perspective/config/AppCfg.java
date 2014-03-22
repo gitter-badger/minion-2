@@ -4,7 +4,7 @@ public class AppCfg {
 
     private XmppCfg xmpp;
     private HipChatCfg hipChat;
-    private BotCfg botCfg;
+    private BotCfg bot;
 
     public XmppCfg getXmpp() {
         return xmpp;
@@ -23,11 +23,11 @@ public class AppCfg {
     }
 
     public BotCfg getBot() {
-        return botCfg;
+        return bot;
     }
 
-    public void setBot(BotCfg botCfg) {
-        this.botCfg = botCfg;
+    public void setBot(BotCfg bot) {
+        this.bot = bot;
     }
 
 }

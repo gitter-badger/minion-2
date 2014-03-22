@@ -1,11 +1,12 @@
 package com.neueda.perspective.hipchat;
 
 import com.neueda.perspective.config.AppCfg;
+import com.neueda.perspective.hipchat.dto.UserObject;
+import com.neueda.perspective.hipchat.dto.UserResponse;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
 
 public class HipChat {
 
@@ -23,9 +24,11 @@ public class HipChat {
                 .queryParam("auth_token", token);
     }
 
-    public void getRooms() {
-        Response response = api.path("rooms/list").request().get();
-        System.out.println(response.readEntity(String.class));
+    public UserObject getUser(String email) {
+        UserResponse response = api.path("users/show")
+                .queryParam("user_id", email)
+                .request().get(UserResponse.class);
+        return response.getUser();
     }
 
 }

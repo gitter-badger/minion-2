@@ -29,6 +29,7 @@ public class Application {
         Injector injector = Guice.createInjector(
                 communicationModule,
                 new ConfigurationModule(appCfg),
+                new ExtensionModule(),
                 new ExecutorModule()
         );
         Application application = injector.getInstance(Application.class);
