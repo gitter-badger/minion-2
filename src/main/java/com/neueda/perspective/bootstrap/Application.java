@@ -34,6 +34,7 @@ public class Application {
         );
         Application application = injector.getInstance(Application.class);
         application.start();
+        System.out.println("Up and running! Press <Enter> to quit.");
         System.in.read();
         application.stop();
     }

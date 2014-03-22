@@ -2,3 +2,4 @@
 *.jar
 *.bak
 target/
+dependency-reduced-pom.xml

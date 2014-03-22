@@ -41,6 +41,7 @@ public class Bot implements ChatMessageListener {
     }
 
     public void start() {
+        logger.info("Starting up");
         UserResponse user = hipChat.getUser(email);
         self = user.getName();
         for (Extension extension : extensions) {
