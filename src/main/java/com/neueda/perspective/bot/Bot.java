@@ -45,6 +45,10 @@ public class Bot implements RoomMessageListener {
     public void start() {
         UserObject user = hipChat.getUser(email);
         self = user.getName();
+        for (Extension extension : extensions) {
+            logger.info("Initializing extension: {}", extension.name());
+            extension.initialize();
+        }
         xmpp.connect(self, rooms, this);
     }
 

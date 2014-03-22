@@ -2,6 +2,8 @@ package com.neueda.perspective.bot.ext;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +12,7 @@ import java.util.stream.Collectors;
 
 public class ExtensionLoader {
 
+    private final Logger logger = LoggerFactory.getLogger(ExtensionLoader.class);
     private final List<String> extensions;
     private ServiceLoader<Extension> loader;
 
@@ -22,7 +25,9 @@ public class ExtensionLoader {
     public List<Extension> load() {
         HashMap<String, Extension> extensionMap = new HashMap<>();
         loader.iterator().forEachRemaining(extension -> {
-            extensionMap.put(extension.name(), extension);
+            String name = extension.name();
+            logger.info("Found extension: {}", name);
+            extensionMap.put(name, extension);
         });
         return extensions.stream()
                 .<Extension>map(extensionMap::get)

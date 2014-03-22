@@ -10,4 +10,4 @@ hipChat:
   email: riga.robot@neueda.com
 bot:
   ext:
-    - reverse
+    - gong
