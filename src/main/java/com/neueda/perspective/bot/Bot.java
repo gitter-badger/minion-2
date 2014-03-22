@@ -6,11 +6,11 @@ import com.neueda.perspective.bot.ext.result.ExtensionResult;
 import com.neueda.perspective.config.AppCfg;
 import com.neueda.perspective.hipchat.HipChat;
 import com.neueda.perspective.hipchat.RoomMessageListener;
+import com.neueda.perspective.hipchat.RoomMessageSender;
 import com.neueda.perspective.hipchat.XmppConnector;
 import com.neueda.perspective.hipchat.dto.UserObject;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +53,7 @@ public class Bot implements RoomMessageListener {
     }
 
     @Override
-    public void onMessage(MultiUserChat room, Message message) {
+    public void onMessage(RoomMessageSender sender, Message message) {
         String from = message.getFrom();
         Optional<String> resource = XmppConnector.getResource(from);
         if (resource.isPresent() && resource.get().equals(self)) {
@@ -65,7 +65,7 @@ public class Bot implements RoomMessageListener {
         Optional<String> response = runExtensions(extensions.iterator(), from, body);
         response.ifPresent(s -> {
             try {
-                room.sendMessage(s);
+                sender.send(s);
             } catch (XMPPException e) {
                 logger.error("Failed to send XMPP response", e);
             }

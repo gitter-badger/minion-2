@@ -54,11 +54,12 @@ public class XmppConnector {
             final MultiUserChat room = joinRoom(nickname, roomName);
             room.addMessageListener(packet -> {
                 if (packet instanceof Message) {
-                    messageListener.onMessage(room, (Message) packet);
+                    messageListener.onMessage(room::sendMessage, (Message) packet);
                 }
             });
         }
         keepAlive();
+        listen(messageListener);
     }
 
     private void connectAndLogin() {
@@ -103,6 +104,14 @@ public class XmppConnector {
             } catch (XMPPException ignored) {
             }
         }, 0, 1, TimeUnit.MINUTES);
+    }
+
+    private void listen(RoomMessageListener messageListener) {
+        xmpp.getChatManager().addChatListener((chat, createdLocally) -> {
+            chat.addMessageListener((privateChat, message) -> {
+                messageListener.onMessage(privateChat::sendMessage, message);
+            });
+        });
     }
 
     public void shutdown() {
