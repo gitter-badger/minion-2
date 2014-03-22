@@ -4,14 +4,23 @@ import java.util.List;
 
 public class BotCfg {
 
-    private List<String> ext;
+    private List<String> extensions;
+    private List<String> join;
 
-    public List<String> getExt() {
-        return ext;
+    public List<String> getExtensions() {
+        return extensions;
     }
 
-    public void setExt(List<String> ext) {
-        this.ext = ext;
+    public void setExtensions(List<String> extensions) {
+        this.extensions = extensions;
+    }
+
+    public List<String> getJoin() {
+        return join;
+    }
+
+    public void setJoin(List<String> join) {
+        this.join = join;
     }
 
 }

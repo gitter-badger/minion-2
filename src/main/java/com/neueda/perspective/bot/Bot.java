@@ -4,11 +4,9 @@ import com.neueda.perspective.bot.ext.Extension;
 import com.neueda.perspective.bot.ext.ExtensionLoaderFactory;
 import com.neueda.perspective.bot.ext.result.ExtensionResult;
 import com.neueda.perspective.config.AppCfg;
-import com.neueda.perspective.hipchat.HipChat;
-import com.neueda.perspective.hipchat.RoomMessageListener;
-import com.neueda.perspective.hipchat.RoomMessageSender;
-import com.neueda.perspective.hipchat.XmppConnector;
-import com.neueda.perspective.hipchat.dto.UserObject;
+import com.neueda.perspective.hipchat.*;
+import com.neueda.perspective.hipchat.dto.RoomData;
+import com.neueda.perspective.hipchat.dto.UserData;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.slf4j.Logger;
@@ -22,38 +20,46 @@ import java.util.Optional;
 public class Bot implements RoomMessageListener {
 
     private final Logger logger = LoggerFactory.getLogger(Bot.class);
-    private final XmppConnector xmpp;
+    private final XmppConnectorFactory xmppFactory;
+    private XmppConnector xmpp;
     private final HipChat hipChat;
     private final List<Extension> extensions;
     private final String email;
-    private final List<String> rooms;
     private String self;
+    private final List<String> join;
 
     @Inject
-    public Bot(XmppConnector xmpp,
+    public Bot(XmppConnectorFactory xmppFactory,
                HipChat hipChat,
                AppCfg cfg,
                ExtensionLoaderFactory loaderFactory) {
-        this.xmpp = xmpp;
+        this.xmppFactory = xmppFactory;
         this.hipChat = hipChat;
         email = cfg.getHipChat().getEmail();
-        List<String> ext = cfg.getBot().getExt();
-        rooms = cfg.getXmpp().getRooms();
+        List<String> ext = cfg.getBot().getExtensions();
         extensions = loaderFactory.create(ext).load();
+        join = cfg.getBot().getJoin();
     }
 
     public void start() {
-        UserObject user = hipChat.getUser(email);
+        UserData user = hipChat.getUser(email);
         self = user.getName();
         for (Extension extension : extensions) {
             logger.info("Initializing extension: {}", extension.name());
             extension.initialize();
         }
-        xmpp.connect(self, rooms, this);
+        xmpp = xmppFactory.create(user.getXmppJid());
+        xmpp.connect(this);
+        for (String roomName : join) {
+            RoomData room = hipChat.getRoom(roomName);
+            xmpp.joinRoom(self, room.getXmppJid(), this);
+        }
     }
 
     public void shutdown() {
-        xmpp.shutdown();
+        if (xmpp != null) {
+            xmpp.shutdown();
+        }
     }
 
     @Override

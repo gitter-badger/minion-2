@@ -1,6 +1,7 @@
 package com.neueda.perspective.hipchat;
 
 import com.google.common.base.Throwables;
+import com.google.inject.assistedinject.Assisted;
 import com.neueda.perspective.config.AppCfg;
 import com.neueda.perspective.config.XmppCfg;
 import org.jivesoftware.smack.*;
@@ -13,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
@@ -24,40 +24,26 @@ public class XmppConnector {
     public static final String XMPP_PASSWORD = "xmpp.password";
 
     private final Logger logger = LoggerFactory.getLogger(XmppConnector.class);
-    private final String conf;
-
     private final String username;
-
     private final XMPPConnection xmpp;
     private final ScheduledExecutorService scheduler;
     private final Map<String, MultiUserChat> rooms = new HashMap<>();
 
     @Inject
     public XmppConnector(AppCfg cfg,
-                         @Named("scheduler.keepAlive") ScheduledExecutorService scheduler) {
+                         @Named("scheduler.keepAlive") ScheduledExecutorService scheduler,
+                         @Assisted String jid) {
         XmppCfg xmppCfg = cfg.getXmpp();
         String host = xmppCfg.getHost();
         int port = xmppCfg.getPort();
         ConnectionConfiguration config = new ConnectionConfiguration(host, port);
         xmpp = new XMPPConnection(config);
-        conf = xmppCfg.getConf();
-        String jid = xmppCfg.getJid();
         username = String.format("%s@%s", jid, host);
         this.scheduler = scheduler;
     }
 
-    public void connect(String nickname,
-                        List<String> roomNames,
-                        RoomMessageListener messageListener) {
+    public void connect(RoomMessageListener messageListener) {
         connectAndLogin();
-        for (String roomName : roomNames) {
-            final MultiUserChat room = joinRoom(nickname, roomName);
-            room.addMessageListener(packet -> {
-                if (packet instanceof Message) {
-                    messageListener.onMessage(room::sendMessage, (Message) packet);
-                }
-            });
-        }
         keepAlive();
         listen(messageListener);
     }
@@ -77,16 +63,20 @@ public class XmppConnector {
         logger.info("Connected and logged in");
     }
 
-    private MultiUserChat joinRoom(String nickname, String roomName) {
-        MultiUserChat room = new MultiUserChat(xmpp, roomName + "@" + conf);
+    public void joinRoom(String nickname, String roomJid, RoomMessageListener messageListener) {
+        MultiUserChat room = new MultiUserChat(xmpp, roomJid);
         try {
             room.join(nickname, null, noHistory(), SmackConfiguration.getPacketReplyTimeout());
         } catch (XMPPException e) {
             throw Throwables.propagate(e);
         }
-        rooms.put(roomName, room);
-        logger.info("Joined room: {}", roomName);
-        return room;
+        rooms.put(roomJid, room);
+        logger.info("Joined room: {}", roomJid);
+        room.addMessageListener(packet -> {
+            if (packet instanceof Message) {
+                messageListener.onMessage(room::sendMessage, (Message) packet);
+            }
+        });
     }
 
     private DiscussionHistory noHistory() {

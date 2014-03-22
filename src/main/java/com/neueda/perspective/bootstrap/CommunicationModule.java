@@ -9,6 +9,8 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.neueda.perspective.hipchat.XmppConnectorFactory;
 
 import javax.inject.Named;
 import javax.ws.rs.client.Client;
@@ -18,6 +20,8 @@ public class CommunicationModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        install(new FactoryModuleBuilder()
+                .build(XmppConnectorFactory.class));
     }
 
     @Provides

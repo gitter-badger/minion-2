@@ -1,8 +1,8 @@
 package com.neueda.perspective.hipchat;
 
 import com.neueda.perspective.config.AppCfg;
-import com.neueda.perspective.hipchat.dto.UserObject;
-import com.neueda.perspective.hipchat.dto.UserResponse;
+import com.neueda.perspective.hipchat.dto.RoomData;
+import com.neueda.perspective.hipchat.dto.UserData;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
@@ -20,15 +20,20 @@ public class HipChat {
         String target = cfg.getHipChat().getTarget();
         String token = System.getProperty(HIPCHAT_TOKEN);
         api = client.target(target)
-                .path("v1")
+                .path("v2")
                 .queryParam("auth_token", token);
     }
 
-    public UserObject getUser(String email) {
-        UserResponse response = api.path("users/show")
-                .queryParam("user_id", email)
-                .request().get(UserResponse.class);
-        return response.getUser();
+    public RoomData getRoom(String name) {
+        return api.path("room")
+                .path(name)
+                .request().get(RoomData.class);
+    }
+
+    public UserData getUser(String email) {
+        return api.path("user")
+                .path(email)
+                .request().get(UserData.class);
     }
 
 }
