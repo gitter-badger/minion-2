@@ -2,7 +2,7 @@ package com.neueda.perspective.hipchat.dto;
 
 import java.util.Date;
 
-public final class UserData {
+public final class UserResponse {
 
     private int id;
     private String xmppJid;

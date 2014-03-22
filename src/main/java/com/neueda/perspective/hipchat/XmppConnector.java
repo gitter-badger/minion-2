@@ -42,7 +42,7 @@ public class XmppConnector {
         this.scheduler = scheduler;
     }
 
-    public void connect(RoomMessageListener messageListener) {
+    public void connect(ChatMessageListener messageListener) {
         connectAndLogin();
         keepAlive();
         listen(messageListener);
@@ -63,7 +63,7 @@ public class XmppConnector {
         logger.info("Connected and logged in");
     }
 
-    public void joinRoom(String nickname, String roomJid, RoomMessageListener messageListener) {
+    public void joinRoom(String nickname, String roomJid, ChatMessageListener messageListener) {
         MultiUserChat room = new MultiUserChat(xmpp, roomJid);
         try {
             room.join(nickname, null, noHistory(), SmackConfiguration.getPacketReplyTimeout());
@@ -96,7 +96,7 @@ public class XmppConnector {
         }, 0, 1, TimeUnit.MINUTES);
     }
 
-    private void listen(RoomMessageListener messageListener) {
+    private void listen(ChatMessageListener messageListener) {
         xmpp.getChatManager().addChatListener((chat, createdLocally) -> {
             chat.addMessageListener((privateChat, message) -> {
                 messageListener.onMessage(privateChat::sendMessage, message);

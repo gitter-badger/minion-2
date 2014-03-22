@@ -1,16 +1,16 @@
 package com.neueda.perspective.bot.ext.result;
 
-public class ExtensionResultFinish implements ExtensionResult {
+public class ExtensionResultRespond implements ExtensionResult {
 
     private final String response;
 
-    public ExtensionResultFinish(String response) {
+    public ExtensionResultRespond(String response) {
         this.response = response;
     }
 
     @Override
     public <T> T accept(Visitor<T> visitor) {
-        return visitor.visitFinish(response);
+        return visitor.visitRespond(response);
     }
 
 }

@@ -7,5 +7,6 @@ hipChat:
 bot:
   extensions:
     - gong
+    - broadcast
   join:
     - XMPP Bot

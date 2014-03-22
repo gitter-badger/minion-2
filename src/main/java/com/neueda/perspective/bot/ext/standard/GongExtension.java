@@ -4,7 +4,7 @@ import com.google.common.io.InputSupplier;
 import com.google.common.io.Resources;
 import com.neueda.perspective.bot.ext.Extension;
 import com.neueda.perspective.bot.ext.result.ExtensionResult;
-import com.neueda.perspective.bot.ext.result.ExtensionResultFinish;
+import com.neueda.perspective.bot.ext.result.ExtensionResultRespond;
 import com.neueda.perspective.bot.ext.result.ExtensionResultProceed;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
@@ -46,7 +46,7 @@ public class GongExtension implements Extension {
         Matcher matcher = PATTERN.matcher(message);
         if (matcher.matches()) {
             gong();
-            return new ExtensionResultFinish(RESPONSE);
+            return new ExtensionResultRespond(RESPONSE);
         }
         return new ExtensionResultProceed();
     }

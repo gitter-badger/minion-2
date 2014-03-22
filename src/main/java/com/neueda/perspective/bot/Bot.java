@@ -5,19 +5,18 @@ import com.neueda.perspective.bot.ext.ExtensionLoaderFactory;
 import com.neueda.perspective.bot.ext.result.ExtensionResult;
 import com.neueda.perspective.config.AppCfg;
 import com.neueda.perspective.hipchat.*;
-import com.neueda.perspective.hipchat.dto.RoomData;
-import com.neueda.perspective.hipchat.dto.UserData;
+import com.neueda.perspective.hipchat.dto.RoomResponse;
+import com.neueda.perspective.hipchat.dto.UserResponse;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-public class Bot implements RoomMessageListener {
+public class Bot implements ChatMessageListener {
 
     private final Logger logger = LoggerFactory.getLogger(Bot.class);
     private final XmppConnectorFactory xmppFactory;
@@ -26,7 +25,7 @@ public class Bot implements RoomMessageListener {
     private final List<Extension> extensions;
     private final String email;
     private String self;
-    private final List<String> join;
+    private final List<String> rooms;
 
     @Inject
     public Bot(XmppConnectorFactory xmppFactory,
@@ -38,11 +37,11 @@ public class Bot implements RoomMessageListener {
         email = cfg.getHipChat().getEmail();
         List<String> ext = cfg.getBot().getExtensions();
         extensions = loaderFactory.create(ext).load();
-        join = cfg.getBot().getJoin();
+        rooms = cfg.getBot().getJoin();
     }
 
     public void start() {
-        UserData user = hipChat.getUser(email);
+        UserResponse user = hipChat.getUser(email);
         self = user.getName();
         for (Extension extension : extensions) {
             logger.info("Initializing extension: {}", extension.name());
@@ -50,20 +49,21 @@ public class Bot implements RoomMessageListener {
         }
         xmpp = xmppFactory.create(user.getXmppJid());
         xmpp.connect(this);
-        for (String roomName : join) {
-            RoomData room = hipChat.getRoom(roomName);
+        for (String roomName : rooms) {
+            RoomResponse room = hipChat.getRoom(roomName);
             xmpp.joinRoom(self, room.getXmppJid(), this);
         }
     }
 
     public void shutdown() {
+        logger.info("Shutting down");
         if (xmpp != null) {
             xmpp.shutdown();
         }
     }
 
     @Override
-    public void onMessage(RoomMessageSender sender, Message message) {
+    public void onMessage(final ChatMessageSender sender, Message message) {
         String from = message.getFrom();
         Optional<String> resource = XmppConnector.getResource(from);
         if (resource.isPresent() && resource.get().equals(self)) {
@@ -71,35 +71,43 @@ public class Bot implements RoomMessageListener {
         }
         String body = message.getBody();
         logger.debug("Message from {}: {}", from, body);
+        for (Extension extension : extensions) {
+            boolean stop = extension.process(body).accept(new ExtensionResult.Visitor<Boolean>() {
+                @Override
+                public Boolean visitProceed() {
+                    return false;
+                }
 
-        Optional<String> response = runExtensions(extensions.iterator(), from, body);
-        response.ifPresent(s -> {
-            try {
-                sender.send(s);
-            } catch (XMPPException e) {
-                logger.error("Failed to send XMPP response", e);
+                @Override
+                public Boolean visitRespond(String response) {
+                    message(sender, response);
+                    return true;
+                }
+
+                @Override
+                public Boolean visitNotify(String color, String text, boolean notify) {
+                    broadcast(color, text, notify);
+                    return true;
+                }
+            });
+            if (stop) {
+                break;
             }
-        });
-    }
-
-    private Optional<String> runExtensions(final Iterator<Extension> extensionIterator,
-                                           final String from,
-                                           final String message) {
-        if (!extensionIterator.hasNext()) {
-            return Optional.empty();
         }
-        Extension ext = extensionIterator.next();
-        ExtensionResult result = ext.process(message);
-        return result.accept(new ExtensionResult.Visitor<Optional<String>>() {
-            @Override
-            public Optional<String> visitProceed() {
-                return runExtensions(extensionIterator, from, message);
-            }
-
-            @Override
-            public Optional<String> visitFinish(String response) {
-                return Optional.of(response);
-            }
-        });
     }
+
+    private void message(ChatMessageSender sender, String text) {
+        try {
+            sender.send(text);
+        } catch (XMPPException e) {
+            logger.error("Failed to send XMPP response", e);
+        }
+    }
+
+    private void broadcast(String color, String text, boolean notify) {
+        for (String roomName : rooms) {
+            hipChat.sendNotification(roomName, color, text, notify);
+        }
+    }
+
 }

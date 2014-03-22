@@ -6,7 +6,9 @@ public interface ExtensionResult {
     public static interface Visitor<T> {
         T visitProceed();
 
-        T visitFinish(String response);
+        T visitRespond(String response);
+
+        T visitNotify(String color, String text, boolean notify);
     }
 
 }

@@ -1,11 +1,13 @@
 package com.neueda.perspective.hipchat;
 
 import com.neueda.perspective.config.AppCfg;
-import com.neueda.perspective.hipchat.dto.RoomData;
-import com.neueda.perspective.hipchat.dto.UserData;
+import com.neueda.perspective.hipchat.dto.NotificationRequest;
+import com.neueda.perspective.hipchat.dto.RoomResponse;
+import com.neueda.perspective.hipchat.dto.UserResponse;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 
 public class HipChat {
@@ -24,16 +26,24 @@ public class HipChat {
                 .queryParam("auth_token", token);
     }
 
-    public RoomData getRoom(String name) {
+    public RoomResponse getRoom(String name) {
         return api.path("room")
                 .path(name)
-                .request().get(RoomData.class);
+                .request().get(RoomResponse.class);
     }
 
-    public UserData getUser(String email) {
+    public UserResponse getUser(String email) {
         return api.path("user")
                 .path(email)
-                .request().get(UserData.class);
+                .request().get(UserResponse.class);
+    }
+
+    public void sendNotification(String room, String color, String text, boolean notify) {
+        NotificationRequest entity = new NotificationRequest(color, text, notify);
+        api.path("room")
+                .path(room)
+                .path("notification")
+                .request().post(Entity.json(entity));
     }
 
 }

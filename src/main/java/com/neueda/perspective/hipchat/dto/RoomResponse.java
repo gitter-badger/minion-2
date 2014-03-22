@@ -2,7 +2,7 @@ package com.neueda.perspective.hipchat.dto;
 
 import java.util.Date;
 
-public final class RoomData {
+public final class RoomResponse {
 
     private int id;
     private String name;
