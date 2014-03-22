@@ -10,7 +10,7 @@ public class ExtensionResultFinish implements ExtensionResult {
 
     @Override
     public <T> T accept(Visitor<T> visitor) {
-        return visitor.visitRespond(response);
+        return visitor.visitFinish(response);
     }
 
 }

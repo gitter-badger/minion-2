@@ -5,12 +5,12 @@ import com.neueda.perspective.bot.ext.ExtensionLoaderFactory;
 import com.neueda.perspective.bot.ext.result.ExtensionResult;
 import com.neueda.perspective.config.AppCfg;
 import com.neueda.perspective.hipchat.HipChat;
+import com.neueda.perspective.hipchat.RoomMessageListener;
 import com.neueda.perspective.hipchat.XmppConnector;
 import com.neueda.perspective.hipchat.dto.UserObject;
-import org.jivesoftware.smack.Chat;
-import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-public class Bot implements MessageListener {
+public class Bot implements RoomMessageListener {
 
     private final Logger logger = LoggerFactory.getLogger(Bot.class);
     private final XmppConnector xmpp;
@@ -27,6 +27,7 @@ public class Bot implements MessageListener {
     private final List<Extension> extensions;
     private final String email;
     private final List<String> rooms;
+    private String self;
 
     @Inject
     public Bot(XmppConnector xmpp,
@@ -43,7 +44,8 @@ public class Bot implements MessageListener {
 
     public void start() {
         UserObject user = hipChat.getUser(email);
-        xmpp.connect(user.getName(), rooms);
+        self = user.getName();
+        xmpp.connect(self, rooms, this);
     }
 
     public void shutdown() {
@@ -51,15 +53,19 @@ public class Bot implements MessageListener {
     }
 
     @Override
-    public void processMessage(Chat chat, Message message) {
+    public void onMessage(MultiUserChat room, Message message) {
         String from = message.getFrom();
+        Optional<String> resource = XmppConnector.getResource(from);
+        if (resource.isPresent() && resource.get().equals(self)) {
+            return;
+        }
         String body = message.getBody();
         logger.debug("Message from {}: {}", from, body);
 
         Optional<String> response = runExtensions(extensions.iterator(), from, body);
         response.ifPresent(s -> {
             try {
-                chat.sendMessage(s);
+                room.sendMessage(s);
             } catch (XMPPException e) {
                 logger.error("Failed to send XMPP response", e);
             }
@@ -76,12 +82,12 @@ public class Bot implements MessageListener {
         ExtensionResult result = ext.process(message);
         return result.accept(new ExtensionResult.Visitor<Optional<String>>() {
             @Override
-            public Optional<String> visitProceed(String message) {
+            public Optional<String> visitProceed() {
                 return runExtensions(extensionIterator, from, message);
             }
 
             @Override
-            public Optional<String> visitRespond(String response) {
+            public Optional<String> visitFinish(String response) {
                 return Optional.of(response);
             }
         });

@@ -4,9 +4,9 @@ public interface ExtensionResult {
     <T> T accept(Visitor<T> visitor);
 
     public static interface Visitor<T> {
-        T visitProceed(String message);
+        T visitProceed();
 
-        T visitRespond(String response);
+        T visitFinish(String response);
     }
 
 }

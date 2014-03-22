@@ -1,7 +1,7 @@
 package com.neueda.perspective.bot.ext;
 
 import com.neueda.perspective.bot.ext.result.ExtensionResult;
-import com.neueda.perspective.bot.ext.result.ExtensionResultProceed;
+import com.neueda.perspective.bot.ext.result.ExtensionResultFinish;
 
 public class ReverseExtension implements Extension {
 
@@ -15,7 +15,7 @@ public class ReverseExtension implements Extension {
     @Override
     public ExtensionResult process(String message) {
         String reverse = new StringBuilder(message).reverse().toString();
-        return new ExtensionResultProceed(reverse);
+        return new ExtensionResultFinish(reverse);
     }
 
 }
