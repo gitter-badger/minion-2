@@ -1,4 +1,4 @@
-# Perspective (HipChat bot)
+# Neueda Minion (HipChat bot)
 
 Standard bot extensions:
 
