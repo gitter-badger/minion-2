@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 public class XmppConnector {
 
-    public static final String XMPP_PASSWORD = "xmpp.password";
+    private static final String XMPP_PASSWORD = "xmpp.password";
 
     private final Logger logger = LoggerFactory.getLogger(XmppConnector.class);
     private final String username;

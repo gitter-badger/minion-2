@@ -12,7 +12,7 @@ import javax.ws.rs.client.WebTarget;
 
 public class HipChat {
 
-    public static final String HIPCHAT_TOKEN = "hipChat.token";
+    private static final String HIPCHAT_TOKEN = "hipChat.token";
 
     private final WebTarget api;
 
