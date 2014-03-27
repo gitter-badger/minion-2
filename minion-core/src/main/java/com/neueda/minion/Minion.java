@@ -3,7 +3,6 @@ package com.neueda.minion;
 import com.google.inject.Singleton;
 import com.neueda.minion.config.AppCfg;
 import com.neueda.minion.ext.Extension;
-import com.neueda.minion.ext.ExtensionLoaderFactory;
 import com.neueda.minion.ext.result.ExtensionResult;
 import com.neueda.minion.hipchat.*;
 import com.neueda.minion.hipchat.dto.RoomResponse;
@@ -16,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Singleton
 public class Minion implements ChatMessageListener {
@@ -24,7 +24,7 @@ public class Minion implements ChatMessageListener {
     private final XmppConnectorFactory xmppFactory;
     private XmppConnector xmpp;
     private final HipChat hipChat;
-    private final List<Extension> extensions;
+    private final Set<Extension> extensions;
     private final String email;
     private String self;
     private final List<String> rooms;
@@ -33,13 +33,12 @@ public class Minion implements ChatMessageListener {
     public Minion(XmppConnectorFactory xmppFactory,
                   HipChat hipChat,
                   AppCfg cfg,
-                  ExtensionLoaderFactory loaderFactory) {
+                  Set<Extension> extensions) {
         this.xmppFactory = xmppFactory;
         this.hipChat = hipChat;
+        this.extensions = extensions;
         email = cfg.getHipChat().getEmail();
-        List<String> ext = cfg.getBot().getExtensions();
-        extensions = loaderFactory.create(ext).load();
-        rooms = cfg.getBot().getJoin();
+        rooms = cfg.getJoin();
     }
 
     public void start() {

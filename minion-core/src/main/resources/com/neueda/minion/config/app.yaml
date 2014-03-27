@@ -4,10 +4,6 @@ xmpp:
 hipChat:
   target: https://api.hipchat.com
   email: riga.robot@neueda.com
-bot:
-  extensions:
-    - gong
-    - broadcast
-  join:
-    - Neueda
-    - XMPP Bot
+join:
+  - Neueda
+  - XMPP Bot
