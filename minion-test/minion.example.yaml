@@ -1,0 +1,11 @@
+xmpp:
+  host: chat.hipchat.com
+  port: 5222
+  password: xmpp_password
+hipChat:
+  target: https://api.hipchat.com
+  email: bot@example.com
+  token: v2_access_token
+join:
+  - Room 1
+  - Room 2

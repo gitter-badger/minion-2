@@ -1,9 +1,0 @@
-xmpp:
-  host: chat.hipchat.com
-  port: 5222
-hipChat:
-  target: https://api.hipchat.com
-  email: riga.robot@neueda.com
-join:
-  - Neueda
-  - XMPP Bot

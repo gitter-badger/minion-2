@@ -12,7 +12,7 @@
     <modules>
         <module>minion-core</module>
         <module>minion-ext-standard</module>
-        <module>minion-all</module>
+        <module>minion-test</module>
     </modules>
 
     <properties>

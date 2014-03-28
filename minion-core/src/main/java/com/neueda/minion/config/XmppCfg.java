@@ -3,8 +3,8 @@ package com.neueda.minion.config;
 public class XmppCfg {
 
     private String host;
-    private String conf;
     private int port;
+    private String password;
 
     public String getHost() {
         return host;
@@ -14,20 +14,20 @@ public class XmppCfg {
         this.host = host;
     }
 
-    public String getConf() {
-        return conf;
-    }
-
-    public void setConf(String conf) {
-        this.conf = conf;
-    }
-
     public int getPort() {
         return port;
     }
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
 }

@@ -3,3 +3,4 @@
 *.bak
 target/
 dependency-reduced-pom.xml
+minion.yaml

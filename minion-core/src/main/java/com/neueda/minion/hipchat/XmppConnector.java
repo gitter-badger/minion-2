@@ -21,10 +21,9 @@ import java.util.concurrent.TimeUnit;
 
 public class XmppConnector {
 
-    private static final String XMPP_PASSWORD = "xmpp.password";
-
     private final Logger logger = LoggerFactory.getLogger(XmppConnector.class);
     private final String username;
+    private final String password;
     private final XMPPConnection xmpp;
     private final ScheduledExecutorService scheduler;
     private final Map<String, MultiUserChat> rooms = new HashMap<>();
@@ -39,6 +38,7 @@ public class XmppConnector {
         ConnectionConfiguration config = new ConnectionConfiguration(host, port);
         xmpp = new XMPPConnection(config);
         username = String.format("%s@%s", jid, host);
+        password = xmppCfg.getPassword();
         this.scheduler = scheduler;
     }
 
@@ -53,7 +53,6 @@ public class XmppConnector {
         int port = xmpp.getPort();
         String usernameWithResource = username + "/bot";
         logger.info("Connecting as {} to xmpp://{}:{}", usernameWithResource, host, port);
-        String password = System.getProperty(XMPP_PASSWORD);
         try {
             xmpp.connect();
             xmpp.login(usernameWithResource, password);

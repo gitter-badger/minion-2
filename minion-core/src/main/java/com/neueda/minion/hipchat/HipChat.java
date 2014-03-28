@@ -1,6 +1,7 @@
 package com.neueda.minion.hipchat;
 
 import com.neueda.minion.config.AppCfg;
+import com.neueda.minion.config.HipChatCfg;
 import com.neueda.minion.hipchat.dto.NotificationRequest;
 import com.neueda.minion.hipchat.dto.RoomResponse;
 import com.neueda.minion.hipchat.dto.UserResponse;
@@ -12,15 +13,14 @@ import javax.ws.rs.client.WebTarget;
 
 public class HipChat {
 
-    private static final String HIPCHAT_TOKEN = "hipChat.token";
-
     private final WebTarget api;
 
     @Inject
     public HipChat(AppCfg cfg,
                    Client client) {
-        String target = cfg.getHipChat().getTarget();
-        String token = System.getProperty(HIPCHAT_TOKEN);
+        HipChatCfg hipChatCfg = cfg.getHipChat();
+        String target = hipChatCfg.getTarget();
+        String token = hipChatCfg.getToken();
         api = client.target(target)
                 .path("v2")
                 .queryParam("auth_token", token);

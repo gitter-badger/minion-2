@@ -2,7 +2,6 @@ package com.neueda.minion.bootstrap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import com.google.common.io.Resources;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -12,8 +11,8 @@ import com.neueda.minion.config.AppCfg;
 import com.neueda.minion.ext.ExtensionModule;
 
 import javax.inject.Singleton;
+import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -51,8 +50,11 @@ public class Application {
     }
 
     private static AppCfg loadConfiguration(ObjectMapper objectMapper) throws IOException {
-        URL resource = Resources.getResource("com/neueda/minion/config/app.yaml");
-        return objectMapper.readValue(resource, AppCfg.class);
+        File configFile = new File("minion.yaml");
+        if (!configFile.exists()) {
+            throw new RuntimeException("Configuration file not found: " + configFile.getAbsolutePath());
+        }
+        return objectMapper.readValue(configFile, AppCfg.class);
     }
 
     private void start() {
