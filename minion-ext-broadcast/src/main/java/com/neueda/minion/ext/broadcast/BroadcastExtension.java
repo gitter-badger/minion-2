@@ -1,4 +1,4 @@
-package com.neueda.minion.ext.standard;
+package com.neueda.minion.ext.broadcast;
 
 import com.neueda.minion.ext.Extension;
 import com.neueda.minion.ext.PatternHelper;

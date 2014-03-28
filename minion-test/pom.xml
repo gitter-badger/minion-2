@@ -21,7 +21,12 @@
         </dependency>
         <dependency>
             <groupId>com.neueda.minion.extensions</groupId>
-            <artifactId>minion-ext-standard</artifactId>
+            <artifactId>minion-ext-broadcast</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.neueda.minion.extensions</groupId>
+            <artifactId>minion-ext-player</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

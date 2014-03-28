@@ -1,4 +1,4 @@
-package com.neueda.minion.ext.standard;
+package com.neueda.minion.ext.player;
 
 import com.google.common.io.InputSupplier;
 import com.google.common.io.Resources;
@@ -19,14 +19,14 @@ import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class GongExtension implements Extension {
+public class PlayerExtension implements Extension {
 
     private static final String NAME = "gong";
-    private static final String MP3 = "com/neueda/minion/ext/standard/gong.mp3";
+    private static final String MP3 = "com/neueda/minion/ext/player/gong.mp3";
     private static final Pattern PATTERN = Pattern.compile("\\s*[Ff]{2,}[Uu]{3,}.*");
     private static final String RESPONSE = "(tableflip)";
 
-    private final Logger logger = LoggerFactory.getLogger(GongExtension.class);
+    private final Logger logger = LoggerFactory.getLogger(PlayerExtension.class);
     private final Executor executor = Executors.newSingleThreadExecutor();
     private InputSupplier<InputStream> sound;
 

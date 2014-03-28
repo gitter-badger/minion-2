@@ -11,7 +11,8 @@
 
     <modules>
         <module>minion-core</module>
-        <module>minion-ext-standard</module>
+        <module>minion-ext-broadcast</module>
+        <module>minion-ext-player</module>
         <module>minion-test</module>
     </modules>
 

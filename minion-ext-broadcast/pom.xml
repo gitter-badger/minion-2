@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>com.neueda.minion.extensions</groupId>
-    <artifactId>minion-ext-standard</artifactId>
+    <artifactId>minion-ext-broadcast</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>
