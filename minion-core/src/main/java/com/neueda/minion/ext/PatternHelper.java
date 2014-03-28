@@ -14,7 +14,7 @@ public final class PatternHelper {
         Joiner.on("\\s+")
                 .skipNulls()
                 .appendTo(builder, words);
-        builder.append("\\s*:\\s*(.*)\\s*");
+        builder.append("\\s*:\\s*(.*?)\\s*");
         return Pattern.compile(builder.toString());
     }
 

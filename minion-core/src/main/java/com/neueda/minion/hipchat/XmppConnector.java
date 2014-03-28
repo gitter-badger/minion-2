@@ -2,8 +2,7 @@ package com.neueda.minion.hipchat;
 
 import com.google.common.base.Throwables;
 import com.google.inject.assistedinject.Assisted;
-import com.neueda.minion.config.AppCfg;
-import com.neueda.minion.config.XmppCfg;
+import com.neueda.minion.hipchat.cfg.XmppCfg;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smackx.muc.DiscussionHistory;
@@ -11,6 +10,7 @@ import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.HashMap;
@@ -22,24 +22,23 @@ import java.util.concurrent.TimeUnit;
 public class XmppConnector {
 
     private final Logger logger = LoggerFactory.getLogger(XmppConnector.class);
+    private final Map<String, MultiUserChat> rooms = new HashMap<>();
+    private final ScheduledExecutorService scheduler;
+    private final XMPPConnection xmpp;
     private final String username;
     private final String password;
-    private final XMPPConnection xmpp;
-    private final ScheduledExecutorService scheduler;
-    private final Map<String, MultiUserChat> rooms = new HashMap<>();
 
     @Inject
-    public XmppConnector(AppCfg cfg,
+    public XmppConnector(XmppCfg cfg,
                          @Named("scheduler.keepAlive") ScheduledExecutorService scheduler,
                          @Assisted String jid) {
-        XmppCfg xmppCfg = cfg.getXmpp();
-        String host = xmppCfg.getHost();
-        int port = xmppCfg.getPort();
+        this.scheduler = scheduler;
+        String host = cfg.getHost();
+        int port = cfg.getPort();
         ConnectionConfiguration config = new ConnectionConfiguration(host, port);
         xmpp = new XMPPConnection(config);
         username = String.format("%s@%s", jid, host);
-        password = xmppCfg.getPassword();
-        this.scheduler = scheduler;
+        password = cfg.getPassword();
     }
 
     public void connect(ChatMessageListener messageListener) {
@@ -103,6 +102,7 @@ public class XmppConnector {
         });
     }
 
+    @PreDestroy
     public void shutdown() {
         for (MultiUserChat room : rooms.values()) {
             room.leave();

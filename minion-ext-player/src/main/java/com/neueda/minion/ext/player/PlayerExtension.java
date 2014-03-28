@@ -21,7 +21,6 @@ import java.util.regex.Pattern;
 
 public class PlayerExtension implements Extension {
 
-    private static final String NAME = "gong";
     private static final String MP3 = "com/neueda/minion/ext/player/gong.mp3";
     private static final Pattern PATTERN = Pattern.compile("\\s*[Ff]{2,}[Uu]{3,}.*");
     private static final String RESPONSE = "(tableflip)";
@@ -29,11 +28,6 @@ public class PlayerExtension implements Extension {
     private final Logger logger = LoggerFactory.getLogger(PlayerExtension.class);
     private final Executor executor = Executors.newSingleThreadExecutor();
     private InputSupplier<InputStream> sound;
-
-    @Override
-    public String name() {
-        return NAME;
-    }
 
     @Override
     public void initialize() {

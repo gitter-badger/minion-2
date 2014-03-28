@@ -1,19 +1,23 @@
 package com.neueda.minion.bootstrap;
 
-import com.google.inject.AbstractModule;
-import com.neueda.minion.config.AppCfg;
+import com.netflix.governator.configuration.PropertiesConfigurationProvider;
+import com.netflix.governator.guice.BootstrapBinder;
+import com.netflix.governator.guice.BootstrapModule;
 
-class ConfigurationModule extends AbstractModule {
+import java.util.Properties;
 
-    private final AppCfg appCfg;
+class ConfigurationModule implements BootstrapModule {
 
-    public ConfigurationModule(AppCfg appCfg) {
-        this.appCfg = appCfg;
+    private final Properties properties;
+
+    ConfigurationModule(Properties properties) {
+        this.properties = properties;
     }
 
     @Override
-    protected void configure() {
-        bind(AppCfg.class).toInstance(appCfg);
+    public void configure(BootstrapBinder binder) {
+        binder.bindConfigurationProvider()
+                .toInstance(new PropertiesConfigurationProvider(properties));
     }
 
 }

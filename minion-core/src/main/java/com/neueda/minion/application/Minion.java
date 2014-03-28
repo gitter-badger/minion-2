@@ -1,10 +1,10 @@
-package com.neueda.minion;
+package com.neueda.minion.application;
 
-import com.google.inject.Singleton;
-import com.neueda.minion.config.AppCfg;
+import com.netflix.governator.annotations.WarmUp;
 import com.neueda.minion.ext.Extension;
 import com.neueda.minion.ext.result.ExtensionResult;
 import com.neueda.minion.hipchat.*;
+import com.neueda.minion.hipchat.cfg.HipChatCfg;
 import com.neueda.minion.hipchat.dto.RoomResponse;
 import com.neueda.minion.hipchat.dto.UserResponse;
 import org.jivesoftware.smack.XMPPException;
@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -21,32 +22,33 @@ import java.util.Set;
 public class Minion implements ChatMessageListener {
 
     private final Logger logger = LoggerFactory.getLogger(Minion.class);
+    private final String email;
+    private final List<String> rooms;
     private final XmppConnectorFactory xmppFactory;
-    private XmppConnector xmpp;
     private final HipChat hipChat;
     private final Set<Extension> extensions;
-    private final String email;
+    private XmppConnector xmpp;
     private String self;
-    private final List<String> rooms;
 
     @Inject
-    public Minion(XmppConnectorFactory xmppFactory,
+    public Minion(HipChatCfg cfg,
+                  XmppConnectorFactory xmppFactory,
                   HipChat hipChat,
-                  AppCfg cfg,
                   Set<Extension> extensions) {
+        email = cfg.getEmail();
+        rooms = cfg.getRoomsAsList();
         this.xmppFactory = xmppFactory;
         this.hipChat = hipChat;
         this.extensions = extensions;
-        email = cfg.getHipChat().getEmail();
-        rooms = cfg.getJoin();
     }
 
-    public void start() {
+    @WarmUp
+    public void warmUp() {
         logger.info("Starting up");
         UserResponse user = hipChat.getUser(email);
         self = user.getName();
         for (Extension extension : extensions) {
-            logger.info("Initializing extension: {}", extension.name());
+            logger.info("Initializing extension: {}", extension.getClass().getName());
             extension.initialize();
         }
         xmpp = xmppFactory.create(user.getXmppJid());
@@ -54,13 +56,6 @@ public class Minion implements ChatMessageListener {
         for (String roomName : rooms) {
             RoomResponse room = hipChat.getRoom(roomName);
             xmpp.joinRoom(self, room.getXmppJid(), this);
-        }
-    }
-
-    public void shutdown() {
-        logger.info("Shutting down");
-        if (xmpp != null) {
-            xmpp.shutdown();
         }
     }
 
@@ -73,8 +68,9 @@ public class Minion implements ChatMessageListener {
         }
         String body = message.getBody();
         logger.debug("Message from {}: {}", from, body);
-        for (Extension extension : extensions) {
-            boolean stop = extension.process(body).accept(new ExtensionResult.Visitor<Boolean>() {
+
+        extensions.parallelStream().forEach(extension -> {
+            extension.process(body).accept(new ExtensionResult.Visitor<Boolean>() {
                 @Override
                 public Boolean visitProceed() {
                     return false;
@@ -92,10 +88,7 @@ public class Minion implements ChatMessageListener {
                     return true;
                 }
             });
-            if (stop) {
-                break;
-            }
-        }
+        });
     }
 
     private void message(ChatMessageSender sender, String text) {

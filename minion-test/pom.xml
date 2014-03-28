@@ -45,7 +45,13 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>com.neueda.minion.bootstrap.Application</mainClass>
+                    <mainClass>com.neueda.minion.bootstrap.Bootstrap</mainClass>
+                    <systemProperties>
+                        <systemProperty>
+                            <key>root</key>
+                            <value>../minion-core/src/main/webapp</value>
+                        </systemProperty>
+                    </systemProperties>
                 </configuration>
             </plugin>
         </plugins>

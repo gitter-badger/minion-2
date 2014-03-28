@@ -1,9 +1,16 @@
-package com.neueda.minion.config;
+package com.neueda.minion.hipchat.cfg;
 
-public class XmppCfg {
+import com.netflix.governator.annotations.Configuration;
 
-    private String host;
-    private int port;
+public final class XmppCfg {
+
+    @Configuration("xmpp.host")
+    private String host = "chat.hipchat.com";
+
+    @Configuration("xmpp.port")
+    private int port = 5222;
+
+    @Configuration("xmpp.password")
     private String password;
 
     public String getHost() {

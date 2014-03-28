@@ -25,7 +25,7 @@ class CommunicationModule extends AbstractModule {
     }
 
     @Provides
-    @Named("json")
+    @Named("hipChat")
     ObjectMapper providesJsonObjectMapper() {
         ObjectMapper objectMapper = createObjectMapper(null);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -46,7 +46,8 @@ class CommunicationModule extends AbstractModule {
     }
 
     @Provides
-    Client providesRestClient(@Named("json") ObjectMapper objectMapper) {
+    @Named("hipChat")
+    Client providesRestClient(@Named("hipChat") ObjectMapper objectMapper) {
         return ClientBuilder.newBuilder()
                 .register(new JacksonJsonProvider(objectMapper))
                 .build();
