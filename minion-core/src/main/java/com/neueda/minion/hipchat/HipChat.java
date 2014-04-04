@@ -23,12 +23,14 @@ public class HipChat {
     }
 
     public RoomResponse getRoom(String name) {
+        // TODO Handle 404
         return api.path("room")
                 .path(name)
                 .request().get(RoomResponse.class);
     }
 
     public UserResponse getUser(String email) {
+        // TODO Handle 404
         return api.path("user")
                 .path(email)
                 .request().get(UserResponse.class);

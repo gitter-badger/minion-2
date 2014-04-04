@@ -1,11 +1,9 @@
 package com.neueda.minion.bootstrap;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -26,22 +24,11 @@ class CommunicationModule extends AbstractModule {
 
     @Provides
     @Named("hipChat")
-    ObjectMapper providesJsonObjectMapper() {
-        ObjectMapper objectMapper = createObjectMapper(null);
+    ObjectMapper providesHipChatObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
-        return objectMapper;
-    }
-
-    @Provides
-    @Named("yaml")
-    ObjectMapper providesYamlObjectMapper() {
-        return createObjectMapper(new YAMLFactory());
-    }
-
-    private ObjectMapper createObjectMapper(JsonFactory factory) {
-        ObjectMapper objectMapper = new ObjectMapper(factory);
-        objectMapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
         return objectMapper;
     }
 

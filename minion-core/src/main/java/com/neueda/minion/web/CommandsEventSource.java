@@ -1,20 +1,33 @@
 package com.neueda.minion.web;
 
-import javax.inject.Singleton;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.eclipse.jetty.servlets.EventSource;
+
+import javax.inject.Inject;
 import java.io.IOException;
 
-@Singleton
-public class CommandsEventSource extends HttpServlet {
+public class CommandsEventSource implements EventSource {
+
+    private final CommandsBroadcaster commandsBroadcaster;
+    private Emitter emitter;
+
+    @Inject
+    public CommandsEventSource(CommandsBroadcaster commandsBroadcaster) {
+        this.commandsBroadcaster = commandsBroadcaster;
+    }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("text/plain");
-        resp.setStatus(HttpServletResponse.SC_OK);
-        resp.getWriter().println("hello.");
+    public void onOpen(Emitter emitter) throws IOException {
+        this.emitter = emitter;
+        commandsBroadcaster.add(this);
+    }
+
+    public void emitEvent(String name, String data) throws IOException {
+        emitter.event(name, data);
+    }
+
+    @Override
+    public void onClose() {
+        commandsBroadcaster.remove(this);
     }
 
 }

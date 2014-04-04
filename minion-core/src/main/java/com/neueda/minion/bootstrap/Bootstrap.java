@@ -1,5 +1,6 @@
 package com.neueda.minion.bootstrap;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
@@ -26,9 +27,12 @@ public final class Bootstrap {
 
     public static void main(String[] args) throws Exception {
         Bootstrap bootstrap = new Bootstrap();
-        bootstrap.start();
-        System.out.println("Up and running; press <Enter> to quit");
-        System.in.read();
+        try {
+            bootstrap.start();
+            System.out.println("Up and running; press <Enter> to quit");
+            System.in.read();
+        } catch (Exception ignored) {
+        }
         bootstrap.stop();
     }
 
@@ -36,7 +40,8 @@ public final class Bootstrap {
         try {
             tryStart();
         } catch (Exception e) {
-            throw new RuntimeException("Bootstrap failed", e);
+            logger.error("Bootstrap failed", e);
+            throw Throwables.propagate(e);
         }
     }
 

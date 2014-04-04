@@ -7,6 +7,7 @@ import com.neueda.minion.hipchat.*;
 import com.neueda.minion.hipchat.cfg.HipChatCfg;
 import com.neueda.minion.hipchat.dto.RoomResponse;
 import com.neueda.minion.hipchat.dto.UserResponse;
+import com.neueda.minion.web.CommandsBroadcaster;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ public class Minion implements ChatMessageListener {
     private final List<String> rooms;
     private final XmppConnectorFactory xmppFactory;
     private final HipChat hipChat;
+    private final CommandsBroadcaster commandsBroadcaster;
     private final Set<Extension> extensions;
     private XmppConnector xmpp;
     private String self;
@@ -34,11 +36,13 @@ public class Minion implements ChatMessageListener {
     public Minion(HipChatCfg cfg,
                   XmppConnectorFactory xmppFactory,
                   HipChat hipChat,
+                  CommandsBroadcaster commandsBroadcaster,
                   Set<Extension> extensions) {
         email = cfg.getEmail();
         rooms = cfg.getRoomsAsList();
         this.xmppFactory = xmppFactory;
         this.hipChat = hipChat;
+        this.commandsBroadcaster = commandsBroadcaster;
         this.extensions = extensions;
     }
 

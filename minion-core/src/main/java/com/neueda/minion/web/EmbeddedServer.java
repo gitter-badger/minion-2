@@ -4,9 +4,7 @@ import com.google.inject.servlet.GuiceFilter;
 import com.netflix.governator.annotations.WarmUp;
 import com.neueda.minion.web.cfg.EmbeddedServerCfg;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.DefaultHandler;
-import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.resource.Resource;
@@ -32,21 +30,16 @@ public class EmbeddedServer {
     void start() throws Exception {
         server = new Server(port);
 
-        HandlerList handlers = new HandlerList();
-
-        ResourceHandler resourceHandler = new ResourceHandler();
-        resourceHandler.setBaseResource(Resource.newClassPathResource(STATIC_ROOT));
-        handlers.addHandler(resourceHandler);
-
         ServletContextHandler context = new ServletContextHandler();
         context.setContextPath("/");
+        context.setBaseResource(Resource.newClassPathResource(STATIC_ROOT));
+
         FilterHolder guiceFilter = new FilterHolder(GuiceFilter.class);
         guiceFilter.setAsyncSupported(true);
         context.addFilter(guiceFilter, "/*", null);
-        handlers.addHandler(context);
+        context.addServlet(DefaultServlet.class, "/");
 
-        handlers.addHandler(new DefaultHandler());
-        server.setHandler(handlers);
+        server.setHandler(context);
         server.start();
     }
 
