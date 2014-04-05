@@ -9,6 +9,8 @@ public interface ExtensionResult {
         T visitRespond(String response);
 
         T visitNotify(String color, String text, boolean notify);
+
+        T visitCommand(String event, Object data);
     }
 
 }

@@ -29,7 +29,6 @@ public class Minion implements ChatMessageListener {
     private final HipChat hipChat;
     private final CommandsBroadcaster commandsBroadcaster;
     private final Set<Extension> extensions;
-    private XmppConnector xmpp;
     private String self;
 
     @Inject
@@ -55,7 +54,7 @@ public class Minion implements ChatMessageListener {
             logger.info("Initializing extension: {}", extension.getClass().getName());
             extension.initialize();
         }
-        xmpp = xmppFactory.create(user.getXmppJid());
+        XmppConnector xmpp = xmppFactory.create(user.getXmppJid());
         xmpp.connect(this);
         for (String roomName : rooms) {
             RoomResponse room = hipChat.getRoom(roomName);
@@ -89,6 +88,12 @@ public class Minion implements ChatMessageListener {
                 @Override
                 public Boolean visitNotify(String color, String text, boolean notify) {
                     broadcast(color, text, notify);
+                    return true;
+                }
+
+                @Override
+                public Boolean visitCommand(String event, Object data) {
+                    commandsBroadcaster.broadcast(event, data);
                     return true;
                 }
             });

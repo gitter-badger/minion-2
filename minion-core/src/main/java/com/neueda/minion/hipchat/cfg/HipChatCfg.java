@@ -3,6 +3,7 @@ package com.neueda.minion.hipchat.cfg;
 import com.google.common.base.Splitter;
 import com.netflix.governator.annotations.Configuration;
 
+import java.util.Collections;
 import java.util.List;
 
 public final class HipChatCfg {
@@ -48,6 +49,9 @@ public final class HipChatCfg {
     }
 
     public List<String> getRoomsAsList() {
+        if (rooms == null) {
+            return Collections.emptyList();
+        }
         return Splitter.on(',')
                 .trimResults()
                 .omitEmptyStrings()

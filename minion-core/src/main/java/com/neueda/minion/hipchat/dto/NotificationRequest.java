@@ -1,6 +1,6 @@
 package com.neueda.minion.hipchat.dto;
 
-public class NotificationRequest {
+public final class NotificationRequest {
 
     private final String color;
     private final String message;

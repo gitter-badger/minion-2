@@ -7,10 +7,12 @@ import com.google.inject.multibindings.Multibinder;
 public abstract class ExtensionModule extends AbstractModule {
 
     private Multibinder<Extension> extensionBinder;
+    private Multibinder<WebExtension> webExtensionBinder;
 
     @Override
     protected void configure() {
         extensionBinder = Multibinder.newSetBinder(binder(), Extension.class);
+        webExtensionBinder = Multibinder.newSetBinder(binder(), WebExtension.class);
         configureExtensions();
     }
 
@@ -20,6 +22,11 @@ public abstract class ExtensionModule extends AbstractModule {
         extensionBinder.addBinding()
                 .to(extensionClass)
                 .in(Scopes.SINGLETON);
+    }
+
+    protected void registerWebExtension(WebExtension webExtension) {
+        webExtensionBinder.addBinding()
+                .toInstance(webExtension);
     }
 
 }

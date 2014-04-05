@@ -20,7 +20,7 @@ public class CommandsBroadcaster {
     private final Set<CommandsEventSource> eventSources;
 
     @Inject
-    public CommandsBroadcaster(@Named("commands") ObjectMapper objectMapper) {
+    public CommandsBroadcaster(@Named("internal") ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         eventSources = Sets.newConcurrentHashSet();
     }
