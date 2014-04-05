@@ -2,6 +2,7 @@ package com.neueda.minion.web;
 
 import org.eclipse.jetty.servlets.EventSource;
 
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.io.IOException;
 
@@ -28,6 +29,14 @@ public class CommandsEventSource implements EventSource {
     @Override
     public void onClose() {
         commandsBroadcaster.remove(this);
+    }
+
+    @PreDestroy
+    public void closeEmitter() {
+        try {
+            emitter.close();
+        } catch (IllegalStateException ignored) {
+        }
     }
 
 }
