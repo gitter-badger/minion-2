@@ -5,9 +5,27 @@ define([
 ], function(Minion, howler) {
   'use strict';
 
-  Minion.command('player', function(url) {
-    new howler.Howl({
-      urls: [url]
-    }).play();
+  Minion.command('player', function(action) {
+    switch (action.type) {
+      case 'sfx':
+        playSfx(action.path);
+        break;
+    }
   });
+
+  var sfxMap = {};
+  var sfx;
+  var playSfx = function(path) {
+    if (sfx != null) {
+      sfx.stop();
+    }
+    sfx = sfxMap[path];
+    if (sfx == null) {
+      sfx = new howler.Howl({
+        urls: [path]
+      });
+      sfxMap[path] = sfx;
+    }
+    sfx.play();
+  };
 });
