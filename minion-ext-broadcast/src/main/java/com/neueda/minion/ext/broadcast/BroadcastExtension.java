@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 public class BroadcastExtension implements Extension {
 
-    private static final Pattern PATTERN = PatternHelper.preambleAny("good", "news");
+    private static final Pattern PATTERN = PatternHelper.preamble("good", "news");
     private static final String COLOR = "yellow";
     private static final String PREFIX = "(goodnews) ";
 
