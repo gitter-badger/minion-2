@@ -1,15 +1,26 @@
 package com.neueda.minion.ext;
 
+import java.util.UUID;
+
 public class WebExtension {
 
     private final String base;
     private final String contextPath;
     private final String bootstrap;
+    private UUID uuid;
 
-    public WebExtension(Builder builder) {
+    private WebExtension(Builder builder) {
         base = builder.base;
         contextPath = builder.contextPath;
         bootstrap = builder.bootstrap;
+    }
+
+    void setUUID(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    public UUID getUUID() {
+        return uuid;
     }
 
     public static Builder builder() {

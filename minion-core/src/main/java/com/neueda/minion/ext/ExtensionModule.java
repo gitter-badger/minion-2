@@ -4,10 +4,17 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import com.google.inject.multibindings.Multibinder;
 
+import java.util.UUID;
+
 public abstract class ExtensionModule extends AbstractModule {
 
+    private final UUID uuid = UUID.randomUUID();
     private Multibinder<Extension> extensionBinder;
     private Multibinder<WebExtension> webExtensionBinder;
+
+    public UUID getUUID() {
+        return uuid;
+    }
 
     @Override
     protected void configure() {
@@ -25,6 +32,7 @@ public abstract class ExtensionModule extends AbstractModule {
     }
 
     protected void registerWebExtension(WebExtension webExtension) {
+        webExtension.setUUID(uuid);
         webExtensionBinder.addBinding()
                 .toInstance(webExtension);
     }

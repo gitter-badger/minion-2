@@ -1,5 +1,6 @@
 package com.neueda.minion.web;
 
+import com.google.common.base.Preconditions;
 import com.google.inject.servlet.GuiceFilter;
 import com.netflix.governator.annotations.WarmUp;
 import com.neueda.minion.ext.WebExtension;
@@ -19,8 +20,11 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 @Singleton
 public class EmbeddedServer {
@@ -30,16 +34,16 @@ public class EmbeddedServer {
     private final Logger logger = LoggerFactory.getLogger(EmbeddedServer.class);
     private final int port;
     private final Set<WebExtension> webExtensions;
-    private final ClassLoader extensionsClassLoader;
+    private final Map<UUID, ClassLoader> extensionClassLoaders;
     private Server server;
 
     @Inject
     public EmbeddedServer(EmbeddedServerCfg cfg,
                           Set<WebExtension> webExtensions,
-                          @Named("extensions") ClassLoader extensionsClassLoader) {
+                          @Named("extension") Map<UUID, ClassLoader> extensionClassLoaders) {
         port = cfg.getPort();
         this.webExtensions = webExtensions;
-        this.extensionsClassLoader = extensionsClassLoader;
+        this.extensionClassLoaders = extensionClassLoaders;
     }
 
     @WarmUp
@@ -47,16 +51,18 @@ public class EmbeddedServer {
         server = new Server(port);
         ContextHandlerCollection contextHandlers = new ContextHandlerCollection();
 
-        Resource staticRoot = Resource.newClassPathResource(STATIC_ROOT);
-        ContextHandler rootResourceContext = getResourceContext("/", staticRoot);
+        ContextHandler rootResourceContext =
+                getResourceContext("/", STATIC_ROOT, getClass().getClassLoader());
         contextHandlers.addHandler(rootResourceContext);
 
         for (WebExtension webExtension : webExtensions) {
             String contextPath = webExtension.getContextPath();
             String base = webExtension.getBase();
-            URL url = extensionsClassLoader.getResource(base);
-            Resource baseResource = Resource.newResource(url);
-            ContextHandler context = getResourceContext(contextPath, baseResource);
+            ClassLoader classLoader = extensionClassLoaders.get(webExtension.getUUID());
+            Preconditions.checkNotNull(classLoader,
+                    "No class loader found for web extension: {}",
+                    webExtension.getClass());
+            ContextHandler context = getResourceContext(contextPath, base, classLoader);
             contextHandlers.addHandler(context);
         }
 
@@ -73,13 +79,19 @@ public class EmbeddedServer {
         server.start();
     }
 
-    private ContextHandler getResourceContext(String contextPath, Resource base) {
-        logger.info("Creating static context \"{}\" at {}", contextPath, base);
+    private ContextHandler getResourceContext(
+            String contextPath,
+            String base,
+            ClassLoader classLoader) throws IOException {
         ContextHandler context = new ContextHandler();
         context.setContextPath(contextPath);
         ResourceHandler resourceHandler = new ResourceHandler();
-        resourceHandler.setBaseResource(base);
+        URL url = classLoader.getResource(base);
+        Resource baseResource = Resource.newResource(url);
+        logger.info("Creating static context \"{}\" at {}", contextPath, baseResource);
+        resourceHandler.setBaseResource(baseResource);
         context.setHandler(resourceHandler);
+        context.setClassLoader(classLoader);
         return context;
     }
 
