@@ -15,6 +15,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Properties;
 import java.util.ServiceLoader;
@@ -78,14 +85,34 @@ public final class Bootstrap {
         return new ConfigurationModule(properties);
     }
 
-    private static List<AbstractModule> collectModules() throws IOException {
+    private List<AbstractModule> collectModules() throws IOException {
         List<AbstractModule> modules = Lists.newArrayList(
                 new CommunicationModule(),
                 new ExecutorModule(),
                 new WebModule()
         );
-        ServiceLoader.load(ExtensionModule.class).forEach(modules::add);
+        Path root = FileSystems.getDefault().getPath(".").toAbsolutePath();
+        logger.info("Looking for extensions at {}", root);
+        ClassLoader extensionClassLoader = localJarClassLoader(root);
+        ServiceLoader.load(ExtensionModule.class, extensionClassLoader).forEach(module -> {
+            logger.info("Found extension: {}", module.getClass());
+            modules.add(module);
+        });
         return modules;
+    }
+
+    private ClassLoader localJarClassLoader(Path root) throws IOException {
+        URL[] urls = Files.find(root, 1, (path, attrs) -> {
+            return attrs.isRegularFile() && path.toString().contains("minion");
+        }, FileVisitOption.FOLLOW_LINKS).map(path -> {
+            try {
+                logger.info("Found JAR: {}", path.getFileName());
+                return path.normalize().toUri().toURL();
+            } catch (MalformedURLException e) {
+                throw Throwables.propagate(e);
+            }
+        }).toArray(URL[]::new);
+        return URLClassLoader.newInstance(urls);
     }
 
 }
