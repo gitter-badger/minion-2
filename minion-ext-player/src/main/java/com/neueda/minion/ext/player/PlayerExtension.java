@@ -1,6 +1,5 @@
 package com.neueda.minion.ext.player;
 
-import com.google.common.io.Resources;
 import com.googlecode.jcsv.reader.CSVReader;
 import com.googlecode.jcsv.reader.internal.CSVReaderBuilder;
 import com.neueda.minion.ext.Extension;
@@ -17,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -65,11 +65,10 @@ public class PlayerExtension implements Extension {
             if (streams.containsKey(name)) {
                 return new ExtensionResultCommand(PLAYER_EVENT, streams.get(name));
             } else if (WORD_PATTERN.matcher(name).matches()) {
-                try {
-                    Resources.getResource(String.format(SFX_RESOURCE_PATH, name));
+                URL resource = getClass().getClassLoader().getResource(String.format(SFX_RESOURCE_PATH, name));
+                if (resource != null) {
                     PlayerSoundEffect data = new PlayerSoundEffect(String.format(SFX_WEB_PATH, name));
                     return new ExtensionResultCommand(PLAYER_EVENT, data);
-                } catch (IllegalArgumentException ignored) {
                 }
             }
             return new ExtensionResultRespond("(unknown) Nothing to play named \"" + name + "\"");

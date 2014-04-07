@@ -44,7 +44,8 @@ public class ExtensionLoader {
         } catch (MalformedURLException e) {
             throw Throwables.propagate(e);
         }
-        URLClassLoader extensionClassLoader = URLClassLoader.newInstance(new URL[]{url});
+        URLClassLoader extensionClassLoader =
+                URLClassLoader.newInstance(new URL[]{url}, getClass().getClassLoader());
         ServiceLoader.load(ExtensionModule.class, extensionClassLoader).forEach(module -> {
             logger.info("Found extension module: {}", module.getClass());
             modules.add(module);

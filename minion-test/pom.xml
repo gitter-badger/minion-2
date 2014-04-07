@@ -19,16 +19,6 @@
             <artifactId>minion-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.neueda.minion.extensions</groupId>
-            <artifactId>minion-ext-broadcast</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.neueda.minion.extensions</groupId>
-            <artifactId>minion-ext-player</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -47,7 +37,7 @@
                         <configuration>
                             <tasks>
                                 <delete>
-                                    <fileset dir="${project.basedir}" includes="*.jar"/>
+                                    <fileset dir="${project.basedir}" includes="minion-ext-*.jar"/>
                                 </delete>
                             </tasks>
                         </configuration>
@@ -61,7 +51,7 @@
                         <configuration>
                             <tasks>
                                 <copy todir="${project.basedir}">
-                                    <fileset dir="${project.basedir}/.." includes="**/minion-*.jar"/>
+                                    <fileset dir="${project.basedir}/.." includes="**/minion-ext-*.jar"/>
                                     <mapper type="flatten"/>
                                 </copy>
                             </tasks>
@@ -76,16 +66,12 @@
                 <executions>
                     <execution>
                         <goals>
-                            <goal>exec</goal>
+                            <goal>java</goal>
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
-                    <executable>java</executable>
-                    <arguments>
-                        <argument>-jar</argument>
-                        <argument>minion-core-${project.version}.jar</argument>
-                    </arguments>
+                    <mainClass>com.neueda.minion.bootstrap.Bootstrap</mainClass>
                 </configuration>
             </plugin>
         </plugins>
