@@ -37,7 +37,7 @@
                         <configuration>
                             <tasks>
                                 <delete>
-                                    <fileset dir="${project.basedir}" includes="minion-ext-*.jar"/>
+                                    <fileset dir="${project.basedir}" includes="minion-*.jar"/>
                                 </delete>
                             </tasks>
                         </configuration>
@@ -51,7 +51,7 @@
                         <configuration>
                             <tasks>
                                 <copy todir="${project.basedir}">
-                                    <fileset dir="${project.basedir}/.." includes="**/minion-ext-*.jar"/>
+                                    <fileset dir="${project.basedir}/.." includes="**/minion-*.jar"/>
                                     <mapper type="flatten"/>
                                 </copy>
                             </tasks>
