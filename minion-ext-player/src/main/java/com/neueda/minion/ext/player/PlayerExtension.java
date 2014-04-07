@@ -34,7 +34,7 @@ public class PlayerExtension implements Extension {
     private static final Pattern PATTERN = PatternHelper.preamble("play");
     private static final Pattern WORD_PATTERN = Pattern.compile("\\s*[a-z]+\\s*");
 
-    private final Logger logger = LoggerFactory.getLogger(Extension.class);
+    private final Logger logger = LoggerFactory.getLogger(PlayerExtension.class);
     private final Map<String, PlayerLiveStream> streams = new HashMap<>();
 
     @Override
@@ -49,9 +49,11 @@ public class PlayerExtension implements Extension {
         }
         CSVReader<String[]> csvReader = CSVReaderBuilder.newDefaultReader(fileReader);
         csvReader.forEach(line -> {
+            String name = line[0];
             String url = line[1];
             String format = line.length > 2 ? line[2] : DEFAULT_STREAM_FORMAT;
-            streams.put(line[0], new PlayerLiveStream(url, format));
+            logger.info("Registered live stream \"{}\": {}", name, url);
+            streams.put(name, new PlayerLiveStream(url, format));
         });
     }
 
