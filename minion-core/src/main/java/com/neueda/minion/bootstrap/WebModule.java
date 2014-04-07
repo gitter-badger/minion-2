@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.inject.Provides;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.google.inject.name.Names;
 import com.google.inject.servlet.ServletModule;
 import com.neueda.minion.web.BootstrapServlet;
 import com.neueda.minion.web.CommandsEventSourceFactory;
@@ -15,8 +16,17 @@ import javax.inject.Named;
 
 class WebModule extends ServletModule {
 
+    private final ClassLoader extensionClassLoader;
+
+    public WebModule(ClassLoader extensionClassLoader) {
+        this.extensionClassLoader = extensionClassLoader;
+    }
+
     @Override
     protected void configureServlets() {
+        bind(ClassLoader.class)
+                .annotatedWith(Names.named("extensions"))
+                .toInstance(extensionClassLoader);
         bind(EmbeddedServer.class).asEagerSingleton();
 
         install(new FactoryModuleBuilder()

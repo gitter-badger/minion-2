@@ -16,6 +16,8 @@ body {
   top: 50%;
   left: 0;
   width: 100%;
+  -webkit-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
   transform: translateY(-50%);
   text-align: center;
   font-size: 100px;

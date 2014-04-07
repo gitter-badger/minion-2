@@ -12,10 +12,14 @@ import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.resource.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
+import java.net.URL;
 import java.util.Set;
 
 @Singleton
@@ -23,15 +27,19 @@ public class EmbeddedServer {
 
     public static final String STATIC_ROOT = "com/neueda/minion/web";
 
+    private final Logger logger = LoggerFactory.getLogger(EmbeddedServer.class);
     private final int port;
     private final Set<WebExtension> webExtensions;
+    private final ClassLoader extensionsClassLoader;
     private Server server;
 
     @Inject
     public EmbeddedServer(EmbeddedServerCfg cfg,
-                          Set<WebExtension> webExtensions) {
+                          Set<WebExtension> webExtensions,
+                          @Named("extensions") ClassLoader extensionsClassLoader) {
         port = cfg.getPort();
         this.webExtensions = webExtensions;
+        this.extensionsClassLoader = extensionsClassLoader;
     }
 
     @WarmUp
@@ -45,8 +53,10 @@ public class EmbeddedServer {
 
         for (WebExtension webExtension : webExtensions) {
             String contextPath = webExtension.getContextPath();
-            Resource base = webExtension.getBase();
-            ContextHandler context = getResourceContext(contextPath, base);
+            String base = webExtension.getBase();
+            URL url = extensionsClassLoader.getResource(base);
+            Resource baseResource = Resource.newResource(url);
+            ContextHandler context = getResourceContext(contextPath, baseResource);
             contextHandlers.addHandler(context);
         }
 
@@ -64,6 +74,7 @@ public class EmbeddedServer {
     }
 
     private ContextHandler getResourceContext(String contextPath, Resource base) {
+        logger.info("Creating static context \"{}\" at {}", contextPath, base);
         ContextHandler context = new ContextHandler();
         context.setContextPath(contextPath);
         ResourceHandler resourceHandler = new ResourceHandler();

@@ -86,14 +86,14 @@ public final class Bootstrap {
     }
 
     private List<AbstractModule> collectModules() throws IOException {
-        List<AbstractModule> modules = Lists.newArrayList(
-                new CommunicationModule(),
-                new ExecutorModule(),
-                new WebModule()
-        );
         Path root = FileSystems.getDefault().getPath(".").toAbsolutePath();
         logger.info("Looking for extensions at {}", root);
         ClassLoader extensionClassLoader = localJarClassLoader(root);
+        List<AbstractModule> modules = Lists.newArrayList(
+                new CommunicationModule(),
+                new ExecutorModule(),
+                new WebModule(extensionClassLoader)
+        );
         ServiceLoader.load(ExtensionModule.class, extensionClassLoader).forEach(module -> {
             logger.info("Found extension: {}", module.getClass());
             modules.add(module);
@@ -103,7 +103,7 @@ public final class Bootstrap {
 
     private ClassLoader localJarClassLoader(Path root) throws IOException {
         URL[] urls = Files.find(root, 1, (path, attrs) -> {
-            return attrs.isRegularFile() && path.toString().contains("minion");
+            return attrs.isRegularFile() && path.toString().endsWith(".jar");
         }, FileVisitOption.FOLLOW_LINKS).map(path -> {
             try {
                 logger.info("Found JAR: {}", path.getFileName());

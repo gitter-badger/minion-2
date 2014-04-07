@@ -1,10 +1,8 @@
 package com.neueda.minion.ext;
 
-import org.eclipse.jetty.util.resource.Resource;
-
 public class WebExtension {
 
-    private final Resource base;
+    private final String base;
     private final String contextPath;
     private final String bootstrap;
 
@@ -18,7 +16,7 @@ public class WebExtension {
         return new Builder();
     }
 
-    public Resource getBase() {
+    public String getBase() {
         return base;
     }
 
@@ -32,7 +30,7 @@ public class WebExtension {
 
     public static class Builder {
 
-        private Resource base;
+        private String base;
         private String contextPath;
         private String bootstrap;
 
@@ -40,7 +38,7 @@ public class WebExtension {
         }
 
         public Builder base(String base) {
-            this.base = Resource.newClassPathResource(base);
+            this.base = base;
             return this;
         }
 
