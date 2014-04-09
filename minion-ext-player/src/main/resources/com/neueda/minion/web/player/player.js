@@ -5,9 +5,9 @@ define([
 ], function(Minion, howler) {
   'use strict';
 
-  Minion.command('player', function(action) {
+  Minion.command('com.neueda.minion.ext.player', function(action) {
     switch (action.type) {
-      case 'live':
+      case 'stream':
         playLive(action.format, action.url);
         break;
       case 'sfx':

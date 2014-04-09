@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>com.neueda.minion.extensions</groupId>
-    <artifactId>minion-ext-player</artifactId>
+    <artifactId>minion-ext-player-sfx</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>

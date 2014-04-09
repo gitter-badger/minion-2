@@ -11,8 +11,8 @@ public class ExtensionResultCommand implements ExtensionResult {
     }
 
     @Override
-    public <T> T accept(Visitor<T> visitor) {
-        return visitor.visitCommand(event, data);
+    public void accept(Visitor visitor) {
+        visitor.visitCommand(event, data);
     }
 
 }

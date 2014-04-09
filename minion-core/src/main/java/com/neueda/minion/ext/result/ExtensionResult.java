@@ -1,16 +1,14 @@
 package com.neueda.minion.ext.result;
 
 public interface ExtensionResult {
-    <T> T accept(Visitor<T> visitor);
+    void accept(Visitor visitor);
 
-    public static interface Visitor<T> {
-        T visitProceed();
+    public static interface Visitor {
+        void visitRespond(String response);
 
-        T visitRespond(String response);
+        void visitNotify(String color, String text, boolean notify);
 
-        T visitNotify(String color, String text, boolean notify);
-
-        T visitCommand(String event, Object data);
+        void visitCommand(String event, Object data);
     }
 
 }

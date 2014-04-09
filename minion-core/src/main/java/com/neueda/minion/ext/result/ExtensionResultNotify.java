@@ -13,8 +13,8 @@ public class ExtensionResultNotify implements ExtensionResult {
     }
 
     @Override
-    public <T> T accept(Visitor<T> visitor) {
-        return visitor.visitNotify(color, text, notify);
+    public void accept(Visitor visitor) {
+        visitor.visitNotify(color, text, notify);
     }
 
 }

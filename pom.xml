@@ -14,6 +14,8 @@
         <module>minion-ext-broadcast</module>
         <module>minion-ext-player</module>
         <module>minion-test</module>
+        <module>minion-ext-player-radio</module>
+        <module>minion-ext-player-sfx</module>
     </modules>
 
     <properties>

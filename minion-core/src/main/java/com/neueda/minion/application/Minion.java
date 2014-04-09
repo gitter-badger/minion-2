@@ -2,6 +2,7 @@ package com.neueda.minion.application;
 
 import com.netflix.governator.annotations.WarmUp;
 import com.neueda.minion.ext.Extension;
+import com.neueda.minion.ext.messaging.MessageBus;
 import com.neueda.minion.ext.result.ExtensionResult;
 import com.neueda.minion.hipchat.*;
 import com.neueda.minion.hipchat.cfg.HipChatCfg;
@@ -28,6 +29,7 @@ public class Minion implements ChatMessageListener {
     private final XmppConnectorFactory xmppFactory;
     private final HipChat hipChat;
     private final CommandsBroadcaster commandsBroadcaster;
+    private final MessageBus messageBus;
     private final Set<Extension> extensions;
     private String self;
 
@@ -36,12 +38,14 @@ public class Minion implements ChatMessageListener {
                   XmppConnectorFactory xmppFactory,
                   HipChat hipChat,
                   CommandsBroadcaster commandsBroadcaster,
+                  MessageBus messageBus,
                   Set<Extension> extensions) {
         email = cfg.getEmail();
         rooms = cfg.getRoomsAsList();
         this.xmppFactory = xmppFactory;
         this.hipChat = hipChat;
         this.commandsBroadcaster = commandsBroadcaster;
+        this.messageBus = messageBus;
         this.extensions = extensions;
     }
 
@@ -70,34 +74,32 @@ public class Minion implements ChatMessageListener {
             return;
         }
         String body = message.getBody();
+        if (body == null) {
+            return;
+        }
         logger.debug("Message from {}: {}", from, body);
 
-        extensions.parallelStream().forEach(extension -> {
-            extension.process(body).accept(new ExtensionResult.Visitor<Boolean>() {
-                @Override
-                public Boolean visitProceed() {
-                    return false;
-                }
+        ExtensionResult.Visitor visitor = new ExtensionResult.Visitor() {
+            @Override
+            public void visitRespond(String response) {
+                message(sender, response);
+            }
 
-                @Override
-                public Boolean visitRespond(String response) {
-                    message(sender, response);
-                    return true;
-                }
+            @Override
+            public void visitNotify(String color, String text, boolean notify) {
+                broadcast(color, text, notify);
+            }
 
-                @Override
-                public Boolean visitNotify(String color, String text, boolean notify) {
-                    broadcast(color, text, notify);
-                    return true;
-                }
+            @Override
+            public void visitCommand(String event, Object data) {
+                commandsBroadcaster.broadcast(event, data);
+            }
+        };
 
-                @Override
-                public Boolean visitCommand(String event, Object data) {
-                    commandsBroadcaster.broadcast(event, data);
-                    return true;
-                }
-            });
-        });
+        extensions.parallelStream()
+                .forEach(extension -> extension.process(body).accept(visitor));
+        messageBus.getResults().parallelStream()
+                .forEach(result -> result.accept(visitor));
     }
 
     private void message(ChatMessageSender sender, String text) {

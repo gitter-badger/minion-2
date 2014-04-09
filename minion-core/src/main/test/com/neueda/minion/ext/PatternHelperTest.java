@@ -13,7 +13,7 @@ public class PatternHelperTest {
 
     @Test
     public void testOneWord() throws Exception {
-        Pattern preamble = PatternHelper.preamble("foo");
+        Pattern preamble = Patterns.preamble("foo");
 
         assertMatcher(preamble, "foo:bar baz", "bar baz");
         assertMatcher(preamble, "  foo  : bar  baz ", "bar  baz");
@@ -21,7 +21,7 @@ public class PatternHelperTest {
 
     @Test
     public void testTwoWords() throws Exception {
-        Pattern preamble = PatternHelper.preamble("foo", "bar");
+        Pattern preamble = Patterns.preamble("foo", "bar");
 
         assertMatcher(preamble, "foo bar:baz", "baz");
         assertMatcher(preamble, " foo  bar :baz", "baz");

@@ -4,9 +4,9 @@ import com.google.common.base.Joiner;
 
 import java.util.regex.Pattern;
 
-public final class PatternHelper {
+public final class Patterns {
 
-    private PatternHelper() {
+    private Patterns() {
     }
 
     public static Pattern preamble(String... words) {

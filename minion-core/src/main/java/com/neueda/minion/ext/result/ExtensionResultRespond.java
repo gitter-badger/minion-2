@@ -9,8 +9,8 @@ public class ExtensionResultRespond implements ExtensionResult {
     }
 
     @Override
-    public <T> T accept(Visitor<T> visitor) {
-        return visitor.visitRespond(response);
+    public void accept(Visitor visitor) {
+        visitor.visitRespond(response);
     }
 
 }
