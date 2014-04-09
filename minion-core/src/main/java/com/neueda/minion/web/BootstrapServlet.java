@@ -27,6 +27,7 @@ public class BootstrapServlet extends HttpServlet {
         this.objectMapper = objectMapper;
         extensions = webExtensions.stream()
                 .map(WebExtension::getBootstrap)
+                .filter(bootstrap -> bootstrap != null)
                 .collect(Collectors.toSet());
     }
 
