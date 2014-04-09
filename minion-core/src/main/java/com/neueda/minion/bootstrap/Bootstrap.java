@@ -49,7 +49,7 @@ public final class Bootstrap {
 
     private void tryStart() throws Exception {
         logger.info("Starting up Neueda Minion");
-        ConfigurationModule configurationModule = loadConfiguration();
+        Properties configuration = loadConfiguration();
 
         Path root = FileSystems.getDefault().getPath(".").toAbsolutePath();
         ExtensionLoader extensionLoader = new ExtensionLoader();
@@ -66,7 +66,7 @@ public final class Bootstrap {
         modules.addAll(extensionModules);
 
         injector = LifecycleInjector.builder()
-                .withBootstrapModule(configurationModule)
+                .withBootstrapModule(new ConfigurationModule(configuration))
                 .withModules(modules)
                 .build()
                 .createInjector();
@@ -82,7 +82,7 @@ public final class Bootstrap {
         injector = null;
     }
 
-    private static ConfigurationModule loadConfiguration() throws IOException {
+    private static Properties loadConfiguration() throws IOException {
         File configFile = new File("minion.properties");
         if (!configFile.exists()) {
             throw new RuntimeException("Configuration file not found: " + configFile.getAbsolutePath());
@@ -91,7 +91,7 @@ public final class Bootstrap {
         try (InputStream is = new FileInputStream(configFile)) {
             properties.load(is);
         }
-        return new ConfigurationModule(properties);
+        return properties;
     }
 
 

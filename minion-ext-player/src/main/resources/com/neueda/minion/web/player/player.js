@@ -16,17 +16,21 @@ define([
     }
   });
 
-  var liveStream;
+  var currentUrl, liveStream;
   var playLive = function(format, url) {
     var newLiveStream = new howler.Howl({
       format: format,
       urls: [url],
+      volume: 0.5, // TODO Should be configurable
       onload: function() {
-        if (liveStream != null) {
-          liveStream.stop();
+        if (url !== currentUrl) {
+          if (liveStream != null) {
+            liveStream.unload();
+          }
+          currentUrl = url;
+          liveStream = newLiveStream;
+          liveStream.play();
         }
-        liveStream = newLiveStream;
-        liveStream.play();
       }
     });
   };
