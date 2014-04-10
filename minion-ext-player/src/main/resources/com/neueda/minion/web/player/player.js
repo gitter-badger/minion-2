@@ -13,6 +13,9 @@ define([
       case 'sfx':
         playSfx(action.path);
         break;
+      case 'stop':
+        stop();
+        break;
     }
   });
 
@@ -61,4 +64,15 @@ define([
     }
     sfx.play();
   };
+
+  var stop = function() {
+    if (liveStream != null) {
+      liveStream.unload();
+      currentUrl = null;
+    }
+    if (sfx != null) {
+      sfx.stop();
+    }
+  };
+
 });

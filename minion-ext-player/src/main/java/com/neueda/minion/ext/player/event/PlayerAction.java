@@ -1,6 +1,6 @@
 package com.neueda.minion.ext.player.event;
 
-public class PlayerAction {
+public abstract class PlayerAction {
 
     private final String type;
 
