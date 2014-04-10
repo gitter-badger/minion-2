@@ -71,13 +71,9 @@ define([
   document.addEventListener('mozfullscreenchange', onFullscreenChange);
   document.addEventListener('webkitfullscreenchange', onFullscreenChange);
 
-  $(window).keypress(function(e) {
-    if (e.altKey && e.which === 13) {
-      if (body.webkitRequestPointerLock) {
-        body.requestPointerLock();
-      } else {
-        body.requestFullscreen();
-      }
+  $(window).keydown(function(e) {
+    if (e.which === 220 || (e.altKey && e.which === 13)) {
+      body.requestFullscreen();
     }
   });
 });
