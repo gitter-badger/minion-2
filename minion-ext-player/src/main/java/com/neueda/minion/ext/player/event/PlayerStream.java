@@ -26,8 +26,8 @@ public class PlayerStream extends PlayerAction {
     public static class Reader implements MessageBusReader<PlayerStream> {
         @Override
         public PlayerStream read(Map<String, Object> data) throws IllegalArgumentException {
-            String url = MessageBusReader.castArgument(data.get("url"));
-            String format = MessageBusReader.castArgument(data.get("format"));
+            String url = MessageBusReader.getArgument(data, "url");
+            String format = MessageBusReader.getArgument(data, "format");
             return new PlayerStream(url, format);
         }
     }

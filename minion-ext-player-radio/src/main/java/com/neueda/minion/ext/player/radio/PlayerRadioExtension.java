@@ -4,14 +4,11 @@ import com.google.common.collect.ImmutableMap;
 import com.googlecode.jcsv.reader.CSVReader;
 import com.googlecode.jcsv.reader.internal.CSVReaderBuilder;
 import com.neueda.minion.ext.Extension;
+import com.neueda.minion.ext.HipChatMessage;
 import com.neueda.minion.ext.Patterns;
-import com.neueda.minion.ext.messaging.MessageBus;
-import com.neueda.minion.ext.result.ExtensionResult;
-import com.neueda.minion.ext.result.ExtensionResultIdle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -20,7 +17,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PlayerRadioExtension implements Extension {
+public class PlayerRadioExtension extends Extension {
 
     private static final String DEFAULT_STREAM_FORMAT = "mp3";
     private static final Pattern PATTERN = Patterns.preamble("play");
@@ -28,12 +25,6 @@ public class PlayerRadioExtension implements Extension {
 
     private final Logger logger = LoggerFactory.getLogger(PlayerRadioExtension.class);
     private final Map<String, Map<String, Object>> streams = new HashMap<>();
-    private final MessageBus messageBus;
-
-    @Inject
-    public PlayerRadioExtension(MessageBus messageBus) {
-        this.messageBus = messageBus;
-    }
 
     @Override
     public void initialize() {
@@ -56,11 +47,12 @@ public class PlayerRadioExtension implements Extension {
                     .put("format", format)
                     .build());
         });
+        onHipChatMessage(this::handleMessage);
     }
 
-    @Override
-    public ExtensionResult process(String message) {
-        Matcher matcher = PATTERN.matcher(message);
+    private void handleMessage(HipChatMessage message) {
+        String body = message.getBody();
+        Matcher matcher = PATTERN.matcher(body);
         if (matcher.matches()) {
             String name = matcher.group(1);
             Map<String, Object> stream = streams.get(name);
@@ -68,7 +60,6 @@ public class PlayerRadioExtension implements Extension {
                 messageBus.publish(STREAM_MESSAGE, stream);
             }
         }
-        return new ExtensionResultIdle();
     }
 
 }

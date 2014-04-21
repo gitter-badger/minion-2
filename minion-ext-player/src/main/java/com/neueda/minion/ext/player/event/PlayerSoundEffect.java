@@ -20,7 +20,7 @@ public class PlayerSoundEffect extends PlayerAction {
     public static class Reader implements MessageBusReader<PlayerSoundEffect> {
         @Override
         public PlayerSoundEffect read(Map<String, Object> data) throws IllegalArgumentException {
-            String path = MessageBusReader.castArgument(data.get("path"));
+            String path = MessageBusReader.getArgument(data, "path");
             return new PlayerSoundEffect(path);
         }
     }
