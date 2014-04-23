@@ -1,8 +1,9 @@
 /* global define */
 define([
   'minion',
+  'underscore',
   '//cdnjs.cloudflare.com/ajax/libs/howler/1.1.17/howler.min.js'
-], function(Minion, howler) {
+], function(Minion, _, howler) {
   'use strict';
 
   Minion.command('com.neueda.minion.ext.player', function(action) {
@@ -13,6 +14,9 @@ define([
       case 'sfx':
         playSfx(action.path, action.cached);
         break;
+      case 'tts':
+        speak(action.text, action.voice);
+        break;
       case 'stop':
         stop();
         break;
@@ -20,11 +24,12 @@ define([
   });
 
   var currentUrl, liveStream;
+  var liveVolume = 0.5;
   var playLive = function(format, url) {
     var newLiveStream = new howler.Howl({
       format: format,
       urls: [url],
-      volume: 0.5, // TODO Should be configurable
+      volume: liveVolume, // TODO Should be configurable
       autoplay: false,
       onload: function() {
         if (url !== currentUrl) {
@@ -37,6 +42,18 @@ define([
         }
       }
     });
+  };
+
+  var suspendLive = function() {
+    if (liveStream != null) {
+      liveStream.volume(0);
+    }
+  };
+
+  var restoreLive = function() {
+    if (liveStream != null) {
+      liveStream.volume(liveVolume);
+    }
   };
 
   var sfxCache = {};
@@ -62,21 +79,26 @@ define([
       format: 'mp3',
       urls: [path],
       autoplay: false,
-      onplay: function() {
-        if (liveStream != null) {
-          liveStream.volume(0);
-        }
-      },
+      onplay: suspendLive,
       onend: function() {
         if (!cached) {
           sfx.unload();
         }
-        if (liveStream != null) {
-          liveStream.volume(1);
-        }
+        restoreLive();
       }
     });
     return sfx;
+  };
+
+  var speak = function(text, voiceName) {
+    var msg = new window.SpeechSynthesisUtterance();
+    msg.text = text;
+    msg.voice = _.find(window.speechSynthesis.getVoices(), function(voice) {
+      return voice.name.toLowerCase() === voiceName;
+    });
+    msg.onstart = suspendLive;
+    msg.onend = restoreLive;
+    window.speechSynthesis.speak(msg);
   };
 
   var stop = function() {

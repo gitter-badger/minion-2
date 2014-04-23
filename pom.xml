@@ -16,6 +16,7 @@
         <module>minion-test</module>
         <module>minion-ext-player-radio</module>
         <module>minion-ext-player-sfx</module>
+        <module>minion-ext-player-tts</module>
     </modules>
 
     <properties>

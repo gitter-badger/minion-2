@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.neueda.minion.extensions</groupId>
-    <artifactId>minion-ext-player-radio</artifactId>
+    <artifactId>minion-ext-player-tts</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>
@@ -19,12 +19,6 @@
             <artifactId>minion-core</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.googlecode.jcsv</groupId>
-            <artifactId>jcsv</artifactId>
-            <version>1.4.0</version>
         </dependency>
     </dependencies>
 
