@@ -11,7 +11,7 @@ define([
         playLive(action.format, action.url);
         break;
       case 'sfx':
-        playSfx(action.path);
+        playSfx(action.path, action.cached);
         break;
       case 'stop':
         stop();
@@ -25,6 +25,7 @@ define([
       format: format,
       urls: [url],
       volume: 0.5, // TODO Should be configurable
+      autoplay: false,
       onload: function() {
         if (url !== currentUrl) {
           if (liveStream != null) {
@@ -38,31 +39,44 @@ define([
     });
   };
 
-  var sfxMap = {};
+  var sfxCache = {};
   var sfx;
-  var playSfx = function(path) {
+  var playSfx = function(path, cached) {
     if (sfx != null) {
       sfx.stop();
     }
-    sfx = sfxMap[path];
+    if (cached) {
+      sfx = sfxCache[path];
+    }
     if (sfx == null) {
-      sfx = new howler.Howl({
-        format: 'mp3',
-        urls: [path],
-        onplay: function() {
-          if (liveStream != null) {
-            liveStream.volume(0);
-          }
-        },
-        onend: function() {
-          if (liveStream != null) {
-            liveStream.volume(1);
-          }
-        }
-      });
-      sfxMap[path] = sfx;
+      sfx = newSfx(path, cached);
+      if (cached) {
+        sfxCache[path] = sfx;
+      }
     }
     sfx.play();
+  };
+
+  var newSfx = function(path, cached) {
+    var sfx = new howler.Howl({
+      format: 'mp3',
+      urls: [path],
+      autoplay: false,
+      onplay: function() {
+        if (liveStream != null) {
+          liveStream.volume(0);
+        }
+      },
+      onend: function() {
+        if (!cached) {
+          sfx.unload();
+        }
+        if (liveStream != null) {
+          liveStream.volume(1);
+        }
+      }
+    });
+    return sfx;
   };
 
   var stop = function() {

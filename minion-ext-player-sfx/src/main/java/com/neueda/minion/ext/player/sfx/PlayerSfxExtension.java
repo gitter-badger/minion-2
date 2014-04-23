@@ -31,6 +31,7 @@ public class PlayerSfxExtension extends Extension {
             if (resource != null) {
                 messageBus.publish(SFX_MESSAGE, dataBuilder()
                         .put("path", String.format(SFX_WEB_PATH, name))
+                        .put("cached", true)
                         .build());
             } else {
                 String sender = message.getSender();
