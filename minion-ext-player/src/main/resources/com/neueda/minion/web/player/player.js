@@ -91,6 +91,9 @@ define([
   };
 
   var speak = function(text, voiceName) {
+    if (!window.speechSynthesis) {
+      return;
+    }
     var msg = new window.SpeechSynthesisUtterance();
     msg.text = text;
     msg.voice = _.find(window.speechSynthesis.getVoices(), function(voice) {
