@@ -15,10 +15,10 @@ define([
         playSfx(action.path, action.cached);
         break;
       case 'tts':
-        speak(action.text, action.voice);
+        voiceSfx(action.text, action.voice);
         break;
       case 'stop':
-        stop();
+        stopAll();
         break;
     }
   });
@@ -33,9 +33,7 @@ define([
       autoplay: false,
       onload: function() {
         if (url !== currentUrl) {
-          if (liveStream != null) {
-            liveStream.unload();
-          }
+          stopLive();
           currentUrl = url;
           liveStream = newLiveStream;
           liveStream.play();
@@ -56,12 +54,17 @@ define([
     }
   };
 
+  var stopLive = function() {
+    if (liveStream != null) {
+      liveStream.unload();
+      currentUrl = null;
+    }
+  };
+
   var sfxCache = {};
   var sfx;
   var playSfx = function(path, cached) {
-    if (sfx != null) {
-      sfx.stop();
-    }
+    stopSfx();
     if (cached) {
       sfx = sfxCache[path];
     }
@@ -90,25 +93,37 @@ define([
     return sfx;
   };
 
-  var speak = function(text, voiceName) {
+  var voiceMsg;
+  var voiceSfx = function(text, voiceName) {
     if (!window.speechSynthesis) {
       return;
     }
-    var msg = new window.SpeechSynthesisUtterance();
-    msg.text = text;
-    msg.voice = _.find(window.speechSynthesis.getVoices(), function(voice) {
+    stopSfx();
+    voiceMsg = new window.SpeechSynthesisUtterance();
+    voiceMsg.text = text;
+    voiceMsg.voice = _.find(window.speechSynthesis.getVoices(), function(voice) {
       return voice.name.toLowerCase() === voiceName;
     });
-    msg.onstart = suspendLive;
-    msg.onend = restoreLive;
-    window.speechSynthesis.speak(msg);
+    voiceMsg.onstart = suspendLive;
+    voiceMsg.onend = function() {
+      voiceMsg = null;
+      restoreLive();
+    };
+    window.speechSynthesis.speak(voiceMsg);
   };
 
-  var stop = function() {
-    if (liveStream != null) {
-      liveStream.unload();
-      currentUrl = null;
+  var stopSfx = function() {
+    if (sfx != null) {
+      sfx.stop();
     }
+    if (voiceMsg != null) {
+      window.speechSynthesis.cancel();
+    }
+  };
+
+  var stopAll = function() {
+    stopLive();
+    stopSfx();
     if (sfx != null) {
       sfx.stop();
     }
