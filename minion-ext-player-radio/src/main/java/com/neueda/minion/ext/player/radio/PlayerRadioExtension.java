@@ -4,16 +4,18 @@ import com.google.common.collect.ImmutableMap;
 import com.googlecode.jcsv.reader.CSVReader;
 import com.googlecode.jcsv.reader.internal.CSVReaderBuilder;
 import com.neueda.minion.ext.Extension;
+import com.neueda.minion.ext.FileWatcher;
 import com.neueda.minion.ext.HipChatMessage;
 import com.neueda.minion.ext.Patterns;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,11 +26,19 @@ public class PlayerRadioExtension extends Extension {
     private static final String STREAM_MESSAGE = "com.neueda.minion.ext.player.stream";
 
     private final Logger logger = LoggerFactory.getLogger(PlayerRadioExtension.class);
-    private final Map<String, Map<String, Object>> streams = new HashMap<>();
+    private final Map<String, Map<String, Object>> streams = new ConcurrentHashMap<>();
+
+    @Inject
+    private FileWatcher fileWatcher;
 
     @Override
     public void initialize() {
         File streamsFile = new File("streams.csv");
+        fileWatcher.watch(streamsFile, this::updateStreams);
+        onHipChatMessage(this::handleMessage);
+    }
+
+    private void updateStreams(File streamsFile) {
         FileReader fileReader;
         try {
             fileReader = new FileReader(streamsFile);
@@ -37,6 +47,8 @@ public class PlayerRadioExtension extends Extension {
             return;
         }
         CSVReader<String[]> csvReader = CSVReaderBuilder.newDefaultReader(fileReader);
+        logger.info("Updating live streams");
+        streams.clear();
         csvReader.forEach(line -> {
             String name = line[0];
             String url = line[1];
@@ -47,7 +59,6 @@ public class PlayerRadioExtension extends Extension {
                     .put("format", format)
                     .build());
         });
-        onHipChatMessage(this::handleMessage);
     }
 
     private void handleMessage(HipChatMessage message) {
