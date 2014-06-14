@@ -3,7 +3,7 @@ package com.neueda.minion.web;
 import com.google.common.base.Preconditions;
 import com.google.inject.servlet.GuiceFilter;
 import com.netflix.governator.annotations.WarmUp;
-import com.neueda.minion.ext.WebExtension;
+import com.neueda.minion.ext.WebResource;
 import com.neueda.minion.web.cfg.EmbeddedServerCfg;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
@@ -33,16 +33,16 @@ public class EmbeddedServer {
 
     private final Logger logger = LoggerFactory.getLogger(EmbeddedServer.class);
     private final int port;
-    private final Set<WebExtension> webExtensions;
+    private final Set<WebResource> webResources;
     private final Map<UUID, ClassLoader> extensionClassLoaders;
     private Server server;
 
     @Inject
     public EmbeddedServer(EmbeddedServerCfg cfg,
-                          Set<WebExtension> webExtensions,
+                          Set<WebResource> webResources,
                           @Named("extension") Map<UUID, ClassLoader> extensionClassLoaders) {
         port = cfg.getPort();
-        this.webExtensions = webExtensions;
+        this.webResources = webResources;
         this.extensionClassLoaders = extensionClassLoaders;
     }
 
@@ -55,13 +55,13 @@ public class EmbeddedServer {
                 getResourceContext("/", STATIC_ROOT, getClass().getClassLoader());
         contextHandlers.addHandler(rootResourceContext);
 
-        for (WebExtension webExtension : webExtensions) {
-            String contextPath = webExtension.getContextPath();
-            String base = webExtension.getBase();
-            ClassLoader classLoader = extensionClassLoaders.get(webExtension.getUUID());
+        for (WebResource webResource : webResources) {
+            String contextPath = webResource.getContextPath();
+            String base = webResource.getBase();
+            ClassLoader classLoader = extensionClassLoaders.get(webResource.getUUID());
             Preconditions.checkNotNull(classLoader,
                     "No class loader found for web extension: {}",
-                    webExtension.getClass());
+                    webResource.getClass());
             ContextHandler context = getResourceContext(contextPath, base, classLoader);
             contextHandlers.addHandler(context);
         }

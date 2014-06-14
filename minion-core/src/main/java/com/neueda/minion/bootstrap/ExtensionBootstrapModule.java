@@ -4,7 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
 import com.neueda.minion.ext.Extension;
-import com.neueda.minion.ext.WebExtension;
+import com.neueda.minion.ext.WebResource;
 
 import javax.inject.Named;
 import java.util.Map;
@@ -21,7 +21,7 @@ public class ExtensionBootstrapModule extends AbstractModule {
     @Override
     protected void configure() {
         Multibinder.newSetBinder(binder(), Extension.class);
-        Multibinder.newSetBinder(binder(), WebExtension.class);
+        Multibinder.newSetBinder(binder(), WebResource.class);
     }
 
     @Provides

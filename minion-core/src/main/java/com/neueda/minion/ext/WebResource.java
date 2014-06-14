@@ -2,14 +2,14 @@ package com.neueda.minion.ext;
 
 import java.util.UUID;
 
-public class WebExtension {
+public class WebResource {
 
     private final String base;
     private final String contextPath;
     private final String bootstrap;
     private UUID uuid;
 
-    private WebExtension(Builder builder) {
+    private WebResource(Builder builder) {
         base = builder.base;
         contextPath = builder.contextPath;
         bootstrap = builder.bootstrap;
@@ -63,8 +63,8 @@ public class WebExtension {
             return this;
         }
 
-        public WebExtension build() {
-            return new WebExtension(this);
+        public WebResource build() {
+            return new WebResource(this);
         }
 
     }

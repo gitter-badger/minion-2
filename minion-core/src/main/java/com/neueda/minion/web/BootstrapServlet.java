@@ -1,7 +1,7 @@
 package com.neueda.minion.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.neueda.minion.ext.WebExtension;
+import com.neueda.minion.ext.WebResource;
 import com.neueda.minion.web.dto.Manifest;
 
 import javax.inject.Inject;
@@ -23,10 +23,10 @@ public class BootstrapServlet extends HttpServlet {
 
     @Inject
     public BootstrapServlet(@Named("internal") ObjectMapper objectMapper,
-                            Set<WebExtension> webExtensions) {
+                            Set<WebResource> webResources) {
         this.objectMapper = objectMapper;
-        extensions = webExtensions.stream()
-                .map(WebExtension::getBootstrap)
+        extensions = webResources.stream()
+                .map(WebResource::getBootstrap)
                 .filter(bootstrap -> bootstrap != null)
                 .collect(Collectors.toSet());
     }

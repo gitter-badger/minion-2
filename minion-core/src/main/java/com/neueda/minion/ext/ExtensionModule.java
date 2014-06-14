@@ -10,7 +10,7 @@ public abstract class ExtensionModule extends AbstractModule {
 
     private final UUID uuid = UUID.randomUUID();
     private Multibinder<Extension> extensionBinder;
-    private Multibinder<WebExtension> webExtensionBinder;
+    private Multibinder<WebResource> webResourceBinder;
 
     public UUID getUUID() {
         return uuid;
@@ -19,7 +19,7 @@ public abstract class ExtensionModule extends AbstractModule {
     @Override
     protected void configure() {
         extensionBinder = Multibinder.newSetBinder(binder(), Extension.class);
-        webExtensionBinder = Multibinder.newSetBinder(binder(), WebExtension.class);
+        webResourceBinder = Multibinder.newSetBinder(binder(), WebResource.class);
         configureExtensions();
     }
 
@@ -31,10 +31,10 @@ public abstract class ExtensionModule extends AbstractModule {
                 .in(Scopes.SINGLETON);
     }
 
-    protected void registerWebExtension(WebExtension webExtension) {
-        webExtension.setUUID(uuid);
-        webExtensionBinder.addBinding()
-                .toInstance(webExtension);
+    protected void registerWebResource(WebResource webResource) {
+        webResource.setUUID(uuid);
+        webResourceBinder.addBinding()
+                .toInstance(webResource);
     }
 
 }

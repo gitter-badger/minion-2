@@ -1,7 +1,7 @@
 package com.neueda.minion.ext.player.sfx;
 
 import com.neueda.minion.ext.ExtensionModule;
-import com.neueda.minion.ext.WebExtension;
+import com.neueda.minion.ext.WebResource;
 
 public class PlayerSfxExtensionModule extends ExtensionModule {
 
@@ -10,7 +10,7 @@ public class PlayerSfxExtensionModule extends ExtensionModule {
     @Override
     protected void configureExtensions() {
         registerExtension(PlayerSfxExtension.class);
-        registerWebExtension(WebExtension.builder()
+        registerWebResource(WebResource.builder()
                 .base(WEB_BASE)
                 .contextPath("/player/sfx")
                 .build());
