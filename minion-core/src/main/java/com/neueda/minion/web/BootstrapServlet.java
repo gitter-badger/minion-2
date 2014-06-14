@@ -1,6 +1,8 @@
 package com.neueda.minion.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Maps;
+import com.neueda.minion.ext.Extension;
 import com.neueda.minion.ext.WebResource;
 import com.neueda.minion.web.dto.Manifest;
 
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,13 +22,16 @@ import java.util.stream.Collectors;
 public class BootstrapServlet extends HttpServlet {
 
     private final ObjectMapper objectMapper;
-    private final Set<String> extensions;
+    private final Set<Extension> extensions;
+    private final Set<String> resources;
 
     @Inject
     public BootstrapServlet(@Named("internal") ObjectMapper objectMapper,
+                            Set<Extension> extensions,
                             Set<WebResource> webResources) {
         this.objectMapper = objectMapper;
-        extensions = webResources.stream()
+        this.extensions = extensions;
+        resources = webResources.stream()
                 .map(WebResource::getBootstrap)
                 .filter(bootstrap -> bootstrap != null)
                 .collect(Collectors.toSet());
@@ -35,7 +41,12 @@ public class BootstrapServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         Manifest manifest = new Manifest();
-        manifest.setExtensions(extensions);
+        manifest.setResources(resources);
+        Map<String, Map<String, Object>> states = Maps.newHashMap();
+        extensions.stream()
+                .filter(extension -> extension.getQualifier() != null)
+                .forEach(extension -> states.put(extension.getQualifier(), extension.getState()));
+        manifest.setStates(states);
         resp.setContentType("application/json");
         objectMapper.writeValue(resp.getOutputStream(), manifest);
         resp.getOutputStream().flush();

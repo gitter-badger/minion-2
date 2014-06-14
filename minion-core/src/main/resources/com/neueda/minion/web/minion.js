@@ -12,5 +12,14 @@ define(['jquery', 'underscore'], function($, _) {
     });
   };
 
+  var states = {};
+  Minion.setStates = _.once(function(map) {
+    states = map;
+  });
+
+  Minion.getState = function(qualifier) {
+    return states[qualifier];
+  };
+
   return Minion;
 });

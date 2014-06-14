@@ -3,6 +3,8 @@ package com.neueda.minion.ext;
 import com.neueda.minion.ext.messaging.MessageBus;
 
 import javax.inject.Inject;
+import java.util.Collections;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static com.neueda.minion.ext.messaging.MessageBus.dataBuilder;
@@ -13,6 +15,14 @@ public abstract class Extension {
     protected MessageBus messageBus;
 
     public void initialize() {
+    }
+
+    public String getQualifier() {
+        return null;
+    }
+
+    public Map<String, Object> getState() {
+        return Collections.emptyMap();
     }
 
     protected void onHipChatMessage(final Consumer<HipChatMessage> consumer) {

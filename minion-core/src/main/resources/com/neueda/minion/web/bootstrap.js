@@ -2,12 +2,14 @@
 define([
   'jquery',
   'underscore',
-], function($, _) {
+  'minion'
+], function($, _, Minion) {
   'use strict';
 
   console.info('Loading extensions');
   $.getJSON('/bootstrap', function(manifest) {
-    require(manifest.extensions);
+    Minion.setStates(manifest.states);
+    require(manifest.resources);
   });
 
 

@@ -129,4 +129,10 @@ define([
     }
   };
 
+  // Initialize!
+  var playerState = Minion.getState('com.neueda.minion.ext.player');
+  if (playerState.nowPlaying) {
+    playLive(playerState.nowPlaying.format, playerState.nowPlaying.url);
+  }
+
 });
