@@ -1,11 +1,15 @@
 package com.neueda.minion.ext.player.sfx;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.neueda.minion.ext.Extension;
 import com.neueda.minion.ext.HipChatMessage;
 import com.neueda.minion.ext.Patterns;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,17 +33,42 @@ public class PlayerSfxExtension extends Extension {
         Matcher matcher = PATTERN.matcher(body);
         if (matcher.matches()) {
             String name = matcher.group(1);
-            String type = locateSfx(name);
-            if (type != null) {
-                messageBus.publish(SFX_MESSAGE, dataBuilder()
-                        .put("path", String.format(SFX_WEB_PATH, type, name))
-                        .put("cached", true)
-                        .build());
+            String sender = message.getSender();
+            if (name.equals("?")) {
+                hipChatReply(sender, "(doge) such sfx: " + Joiner.on(", ").join(listSfx()));
             } else {
-                String sender = message.getSender();
-                hipChatReply(sender, "(unknown) Nothing to play named \"" + name + "\"");
+                String type = locateSfx(name);
+                if (type != null) {
+                    messageBus.publish(SFX_MESSAGE, dataBuilder()
+                            .put("path", String.format(SFX_WEB_PATH, type, name))
+                            .put("cached", true)
+                            .build());
+                } else {
+                    hipChatReply(sender, "(doge) no sfx named \"" + name + "\"");
+                }
             }
         }
+    }
+
+    private List<String> listSfx() {
+        List<String> sfxList = Lists.newArrayList(
+                "applause",
+                "evil",
+                "gong",
+                "rimshot",
+                "trombone"
+        );
+        File[] files = new File("sfx").listFiles();
+        if (files != null) {
+            for (File file : files) {
+                String name = file.getName();
+                if (file.isFile() && name.endsWith(".mp3")) {
+                    sfxList.add(name.substring(0, name.length() - 4));
+                }
+            }
+        }
+        Collections.sort(sfxList);
+        return sfxList;
     }
 
     private String locateSfx(String name) {

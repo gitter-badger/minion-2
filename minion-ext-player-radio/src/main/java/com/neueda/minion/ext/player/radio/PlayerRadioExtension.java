@@ -1,6 +1,8 @@
 package com.neueda.minion.ext.player.radio;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.googlecode.jcsv.reader.CSVReader;
 import com.googlecode.jcsv.reader.internal.CSVReaderBuilder;
 import com.neueda.minion.ext.Extension;
@@ -14,6 +16,8 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
@@ -66,11 +70,25 @@ public class PlayerRadioExtension extends Extension {
         Matcher matcher = PATTERN.matcher(body);
         if (matcher.matches()) {
             String name = matcher.group(1);
-            Map<String, Object> stream = streams.get(name);
-            if (stream != null) {
-                messageBus.publish(STREAM_MESSAGE, stream);
+            String sender = message.getSender();
+            if (name.equals("?")) {
+                hipChatReply(sender, "(doge) such streams: " + Joiner.on(", ").join(listStreams()));
+            } else {
+                Map<String, Object> stream = streams.get(name);
+                if (stream != null) {
+                    messageBus.publish(STREAM_MESSAGE, stream);
+                    hipChatReply(sender, "(doge) wow! playing \"" + name + "\"");
+                } else {
+                    hipChatReply(sender, "(doge) no stream named \"" + name + "\"");
+                }
             }
         }
+    }
+
+    private List<String> listStreams() {
+        List<String> streamList = Lists.newArrayList(streams.keySet());
+        Collections.sort(streamList);
+        return streamList;
     }
 
 }
