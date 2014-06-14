@@ -5,6 +5,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.neueda.minion.hipchat.cfg.XmppCfg;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smackx.muc.DiscussionHistory;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -24,9 +26,10 @@ public class XmppConnector {
     private final Logger logger = LoggerFactory.getLogger(XmppConnector.class);
     private final Map<String, MultiUserChat> rooms = new HashMap<>();
     private final ScheduledExecutorService scheduler;
-    private final XMPPConnection xmpp;
     private final String username;
     private final String password;
+    private final XMPPTCPConnection xmpp;
+    private Chat selfChat;
 
     @Inject
     public XmppConnector(XmppCfg cfg,
@@ -36,9 +39,10 @@ public class XmppConnector {
         String host = cfg.getHost();
         int port = cfg.getPort();
         ConnectionConfiguration config = new ConnectionConfiguration(host, port);
-        xmpp = new XMPPConnection(config);
         username = String.format("%s@%s", jid, host);
         password = cfg.getPassword();
+        xmpp = new XMPPTCPConnection(config);
+        selfChat = ChatManager.getInstanceFor(xmpp).createChat(username, null);
     }
 
     public void connect(ChatMessageListener messageListener) {
@@ -55,7 +59,7 @@ public class XmppConnector {
         try {
             xmpp.connect();
             xmpp.login(usernameWithResource, password);
-        } catch (XMPPException e) {
+        } catch (SmackException | XMPPException | IOException e) {
             throw Throwables.propagate(e);
         }
         logger.info("Connected and logged in");
@@ -64,8 +68,8 @@ public class XmppConnector {
     public void joinRoom(String nickname, String roomJid, ChatMessageListener messageListener) {
         MultiUserChat room = new MultiUserChat(xmpp, roomJid);
         try {
-            room.join(nickname, null, noHistory(), SmackConfiguration.getPacketReplyTimeout());
-        } catch (XMPPException e) {
+            room.join(nickname, null, noHistory(), SmackConfiguration.getDefaultPacketReplyTimeout());
+        } catch (XMPPException | SmackException e) {
             throw Throwables.propagate(e);
         }
         rooms.put(roomJid, room);
@@ -84,18 +88,19 @@ public class XmppConnector {
         return history;
     }
 
+    // HipChat-specific keep-alive mechanism
+    // See: http://help.hipchat.com/knowledgebase/articles/64377-xmpp-jabber-support-details
     private void keepAlive() {
-        Chat self = xmpp.getChatManager().createChat(username, null);
         scheduler.scheduleAtFixedRate(() -> {
             try {
-                self.sendMessage(" ");
-            } catch (XMPPException ignored) {
+                selfChat.sendMessage(" ");
+            } catch (XMPPException | SmackException ignored) {
             }
         }, 0, 1, TimeUnit.MINUTES);
     }
 
     private void listen(ChatMessageListener messageListener) {
-        xmpp.getChatManager().addChatListener((chat, createdLocally) -> {
+        ChatManager.getInstanceFor(xmpp).addChatListener((chat, createdLocally) -> {
             chat.addMessageListener((privateChat, message) -> {
                 messageListener.onMessage(privateChat::sendMessage, message);
             });
@@ -104,10 +109,14 @@ public class XmppConnector {
 
     @PreDestroy
     public void shutdown() {
-        for (MultiUserChat room : rooms.values()) {
-            room.leave();
+        try {
+            for (MultiUserChat room : rooms.values()) {
+                room.leave();
+            }
+            xmpp.disconnect();
+        } catch (SmackException.NotConnectedException ignored) {
         }
-        xmpp.disconnect();
+        selfChat.close();
         scheduler.shutdown();
     }
 

@@ -17,7 +17,7 @@
         <jackson.version>2.3.1</jackson.version>
         <jetty.version>9.1.3.v20140225</jetty.version>
         <slf4j.version>1.7.5</slf4j.version>
-        <smackx.version>3.2.1</smackx.version>
+        <smackx.version>4.0.0</smackx.version>
     </properties>
 
     <dependencies>
@@ -55,12 +55,22 @@
 
         <dependency>
             <groupId>org.igniterealtime.smack</groupId>
-            <artifactId>smack</artifactId>
+            <artifactId>smack-tcp</artifactId>
             <version>${smackx.version}</version>
         </dependency>
         <dependency>
             <groupId>org.igniterealtime.smack</groupId>
-            <artifactId>smackx</artifactId>
+            <artifactId>smack-resolver-javax</artifactId>
+            <version>${smackx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.igniterealtime.smack</groupId>
+            <artifactId>smack-extensions</artifactId>
+            <version>${smackx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.igniterealtime.smack</groupId>
+            <artifactId>smack-extensions</artifactId>
             <version>${smackx.version}</version>
         </dependency>
 

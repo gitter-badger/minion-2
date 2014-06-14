@@ -10,6 +10,7 @@ import com.neueda.minion.hipchat.cfg.HipChatCfg;
 import com.neueda.minion.hipchat.dto.RoomResponse;
 import com.neueda.minion.hipchat.dto.UserResponse;
 import com.neueda.minion.web.CommandsBroadcaster;
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.slf4j.Logger;
@@ -124,7 +125,7 @@ public class Minion implements ChatMessageListener {
         String text = hipChatReply.getText();
         try {
             sender.send(text);
-        } catch (XMPPException e) {
+        } catch (XMPPException | SmackException e) {
             logger.error("Failed to send XMPP response", e);
         }
     }
