@@ -5,14 +5,16 @@ import com.neueda.minion.ext.WebResource;
 
 public class PlayerSfxExtensionModule extends ExtensionModule {
 
-    public static final String WEB_BASE = "com/neueda/minion/web/player/sfx";
-
     @Override
     protected void configureExtensions() {
         registerExtension(PlayerSfxExtension.class);
         registerWebResource(WebResource.builder()
-                .base(WEB_BASE)
-                .contextPath("/player/sfx")
+                .resourceRoot("com/neueda/minion/web/player/sfx")
+                .contextPath("/player/sfx/core")
+                .build());
+        registerWebResource(WebResource.builder()
+                .folder("sfx")
+                .contextPath("/player/sfx/custom")
                 .build());
     }
 

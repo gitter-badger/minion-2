@@ -20,6 +20,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
@@ -52,17 +53,18 @@ public class EmbeddedServer {
         ContextHandlerCollection contextHandlers = new ContextHandlerCollection();
 
         ContextHandler rootResourceContext =
-                getResourceContext("/", STATIC_ROOT, getClass().getClassLoader());
+                getContext("/", STATIC_ROOT, false, getClass().getClassLoader());
         contextHandlers.addHandler(rootResourceContext);
 
         for (WebResource webResource : webResources) {
-            String contextPath = webResource.getContextPath();
-            String base = webResource.getBase();
             ClassLoader classLoader = extensionClassLoaders.get(webResource.getUUID());
             Preconditions.checkNotNull(classLoader,
                     "No class loader found for web extension: {}",
                     webResource.getClass());
-            ContextHandler context = getResourceContext(contextPath, base, classLoader);
+            String contextPath = webResource.getContextPath();
+            String base = webResource.getBase();
+            boolean isFile = webResource.isFile();
+            ContextHandler context = getContext(contextPath, base, isFile, classLoader);
             contextHandlers.addHandler(context);
         }
 
@@ -79,14 +81,15 @@ public class EmbeddedServer {
         server.start();
     }
 
-    private ContextHandler getResourceContext(
+    private ContextHandler getContext(
             String contextPath,
             String base,
+            boolean isFile,
             ClassLoader classLoader) throws IOException {
         ContextHandler context = new ContextHandler();
         context.setContextPath(contextPath);
         ResourceHandler resourceHandler = new ResourceHandler();
-        URL url = classLoader.getResource(base);
+        URL url = isFile ? new File(base).toURI().toURL() : classLoader.getResource(base);
         Resource baseResource = Resource.newResource(url);
         logger.info("Creating static context \"{}\" at {}", contextPath, baseResource);
         resourceHandler.setBaseResource(baseResource);
