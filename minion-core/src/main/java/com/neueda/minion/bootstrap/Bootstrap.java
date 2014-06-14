@@ -58,6 +58,7 @@ public final class Bootstrap {
         Map<UUID, ClassLoader> extensionClassLoaders = extensionLoader.getClassLoaders();
 
         List<Module> modules = Lists.newArrayList(
+                new ConfigurationModule(configuration),
                 new ExtensionBootstrapModule(extensionClassLoaders),
                 new CommunicationModule(),
                 new ExecutorModule(),
@@ -66,7 +67,7 @@ public final class Bootstrap {
         modules.addAll(extensionModules);
 
         injector = LifecycleInjector.builder()
-                .withBootstrapModule(new ConfigurationModule(configuration))
+                .withBootstrapModule(new ConfigurationBootstrapModule(configuration))
                 .withModules(modules)
                 .build()
                 .createInjector();

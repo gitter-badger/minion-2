@@ -8,6 +8,7 @@ define([
 
   console.info('Loading extensions');
   $.getJSON('/bootstrap', function(manifest) {
+    Minion.setConfiguration(manifest.configuration);
     Minion.setStates(manifest.states);
     require(manifest.resources);
   });

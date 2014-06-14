@@ -12,6 +12,15 @@ define(['jquery', 'underscore'], function($, _) {
     });
   };
 
+  var configuration = {};
+  Minion.setConfiguration = _.once(function(map) {
+    configuration = map;
+  });
+
+  Minion.getConfiguration = function(key) {
+    return configuration[key];
+  };
+
   var states = {};
   Minion.setStates = _.once(function(map) {
     states = map;

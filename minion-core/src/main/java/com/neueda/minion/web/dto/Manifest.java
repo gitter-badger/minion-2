@@ -5,8 +5,17 @@ import java.util.Set;
 
 public final class Manifest {
 
+    private Map<String, String> configuration;
     private Set<String> resources;
     private Map<String, Map<String, Object>> states;
+
+    public Map<String, String> getConfiguration() {
+        return configuration;
+    }
+
+    public void setConfiguration(Map<String, String> configuration) {
+        this.configuration = configuration;
+    }
 
     public Set<String> getResources() {
         return resources;

@@ -1,23 +1,29 @@
 package com.neueda.minion.bootstrap;
 
-import com.netflix.governator.configuration.PropertiesConfigurationProvider;
-import com.netflix.governator.guice.BootstrapBinder;
-import com.netflix.governator.guice.BootstrapModule;
+import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.Properties;
 
-class ConfigurationModule implements BootstrapModule {
+public class ConfigurationModule extends AbstractModule {
 
-    private final Properties properties;
+    private final Properties configuration;
 
-    ConfigurationModule(Properties properties) {
-        this.properties = properties;
+    public ConfigurationModule(Properties configuration) {
+        this.configuration = configuration;
     }
 
     @Override
-    public void configure(BootstrapBinder binder) {
-        binder.bindConfigurationProvider()
-                .toInstance(new PropertiesConfigurationProvider(properties));
+    protected void configure() {
+    }
+
+    @Provides
+    @Singleton
+    @Named("configuration")
+    Properties provideConfigurationProperties() {
+        return configuration;
     }
 
 }

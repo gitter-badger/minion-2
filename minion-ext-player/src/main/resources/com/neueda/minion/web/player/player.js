@@ -6,6 +6,9 @@ define([
 ], function(Minion, _, howler) {
   'use strict';
 
+  var STREAM_VOLUME = +Minion.getConfiguration('web.player.volume.stream') || 0.5;
+  var SFX_VOLUME = +Minion.getConfiguration('web.player.volume.sfx') || 1;
+
   Minion.command('com.neueda.minion.ext.player', function(action) {
     switch (action.type) {
       case 'stream':
@@ -24,12 +27,11 @@ define([
   });
 
   var currentUrl, liveStream;
-  var liveVolume = 0.5;
   var playLive = function(format, url) {
     var newLiveStream = new howler.Howl({
       format: format,
       urls: [url],
-      volume: liveVolume, // TODO Should be configurable
+      volume: STREAM_VOLUME,
       autoplay: false,
       onload: function() {
         if (url !== currentUrl) {
@@ -50,7 +52,7 @@ define([
 
   var restoreLive = function() {
     if (liveStream != null) {
-      liveStream.volume(liveVolume);
+      liveStream.volume(STREAM_VOLUME);
     }
   };
 
@@ -81,6 +83,7 @@ define([
     var sfx = new howler.Howl({
       format: 'mp3',
       urls: [path],
+      volume: SFX_VOLUME,
       autoplay: false,
       onplay: suspendLive,
       onend: function() {
