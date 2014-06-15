@@ -68,11 +68,6 @@
             <artifactId>smack-extensions</artifactId>
             <version>${smackx.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.igniterealtime.smack</groupId>
-            <artifactId>smack-extensions</artifactId>
-            <version>${smackx.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
