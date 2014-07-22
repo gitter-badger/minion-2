@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>minion-test</artifactId>
+    <artifactId>minion-dist</artifactId>
     <packaging>pom</packaging>
 
     <dependencies>
