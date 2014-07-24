@@ -11,6 +11,11 @@ import static com.neueda.minion.ext.messaging.MessageBus.dataBuilder;
 
 public abstract class Extension {
 
+    public static final String HIPCHAT_MESSAGE = "com.neueda.minion.hipChat.message";
+    public static final String HIPCHAT_REPLY = "com.neueda.minion.hipChat.reply";
+    public static final String HIPCHAT_NOTIFICATION = "com.neueda.minion.hipChat.notification";
+    public static final String WEB_EVENT = "com.neueda.minion.web.event";
+
     @Inject
     protected MessageBus messageBus;
 
@@ -26,18 +31,18 @@ public abstract class Extension {
     }
 
     protected void onHipChatMessage(final Consumer<HipChatMessage> consumer) {
-        messageBus.subscribe("com.neueda.minion.hipChat.message", consumer, new HipChatMessage.Reader());
+        messageBus.subscribe(HIPCHAT_MESSAGE, consumer, new HipChatMessage.Reader());
     }
 
     protected void hipChatReply(String sender, String text) {
-        messageBus.publish("com.neueda.minion.hipChat.reply", dataBuilder()
+        messageBus.publish(HIPCHAT_REPLY, dataBuilder()
                 .put("sender", sender)
                 .put("text", text)
                 .build());
     }
 
     protected void hipChatNotification(String color, String text, boolean notify) {
-        messageBus.publish("com.neueda.minion.hipChat.notification", dataBuilder()
+        messageBus.publish(HIPCHAT_NOTIFICATION, dataBuilder()
                 .put("color", color)
                 .put("text", text)
                 .put("notify", notify)
@@ -45,7 +50,7 @@ public abstract class Extension {
     }
 
     protected void webEvent(String event, Object data) {
-        messageBus.publish("com.neueda.minion.web.event", dataBuilder()
+        messageBus.publish(WEB_EVENT, dataBuilder()
                 .put("event", event)
                 .put("data", data)
                 .build());

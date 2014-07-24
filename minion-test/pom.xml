@@ -9,9 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.neueda.minion.extensions</groupId>
-    <artifactId>minion-ext-broadcast</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>minion-test</artifactId>
 
     <dependencies>
         <dependency>
@@ -24,36 +22,19 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.neueda.minion</groupId>
-            <artifactId>minion-test</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
+            <groupId>com.netflix.governator</groupId>
+            <artifactId>governator-test-junit</artifactId>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>
