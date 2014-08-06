@@ -7,7 +7,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.Properties;
 
-public class ConfigurationModule extends AbstractModule {
+class ConfigurationModule extends AbstractModule {
 
     private final Properties configuration;
 

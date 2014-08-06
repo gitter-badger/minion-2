@@ -17,7 +17,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 @Singleton
-public class ExtensionLoader {
+class ExtensionLoader {
 
     private final Logger logger = LoggerFactory.getLogger(ExtensionLoader.class);
     private final List<Module> modules;

@@ -4,6 +4,8 @@ import com.netflix.governator.guice.LifecycleTester;
 import com.neueda.minion.ext.Extension;
 import com.neueda.minion.ext.messaging.MessageBus;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
 
 import static com.neueda.minion.ext.messaging.MessageBus.dataBuilder;
@@ -16,7 +18,13 @@ public class ExtensionTester extends LifecycleTester {
 
     public ExtensionTester(Class<? extends Extension> extensionClass,
                            MessageBus messageBus) {
-        super(new MinionTestSuite(extensionClass, messageBus));
+        this(extensionClass, messageBus, Collections.emptyMap());
+    }
+
+    public ExtensionTester(Class<? extends Extension> extensionClass,
+                           MessageBus messageBus,
+                           Map<String, ?> configuration) {
+        super(new MinionTestSuite(extensionClass, messageBus, configuration));
         this.extensionClass = extensionClass;
         this.messageBus = messageBus;
     }

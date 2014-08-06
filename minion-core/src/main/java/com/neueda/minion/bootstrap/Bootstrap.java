@@ -7,6 +7,7 @@ import com.google.inject.Module;
 import com.netflix.governator.guice.LifecycleInjector;
 import com.netflix.governator.lifecycle.LifecycleManager;
 import com.neueda.minion.application.Minion;
+import com.neueda.minion.ext.bootstrap.ConfigurationBootstrapModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

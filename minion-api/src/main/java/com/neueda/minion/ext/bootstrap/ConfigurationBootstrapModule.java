@@ -1,4 +1,4 @@
-package com.neueda.minion.bootstrap;
+package com.neueda.minion.ext.bootstrap;
 
 import com.netflix.governator.configuration.PropertiesConfigurationProvider;
 import com.netflix.governator.guice.BootstrapBinder;
@@ -6,11 +6,11 @@ import com.netflix.governator.guice.BootstrapModule;
 
 import java.util.Properties;
 
-class ConfigurationBootstrapModule implements BootstrapModule {
+public class ConfigurationBootstrapModule implements BootstrapModule {
 
     private final Properties properties;
 
-    ConfigurationBootstrapModule(Properties properties) {
+    public ConfigurationBootstrapModule(Properties properties) {
         this.properties = properties;
     }
 

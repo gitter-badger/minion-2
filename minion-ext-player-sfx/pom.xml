@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>com.neueda.minion</groupId>
-            <artifactId>minion-core</artifactId>
+            <artifactId>minion-api</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

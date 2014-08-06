@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>minion-api</module>
         <module>minion-core</module>
         <module>minion-test</module>
         <module>minion-ext-broadcast</module>

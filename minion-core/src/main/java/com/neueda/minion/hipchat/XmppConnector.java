@@ -29,7 +29,7 @@ public class XmppConnector {
     private final String username;
     private final String password;
     private final XMPPTCPConnection xmpp;
-    private Chat selfChat;
+    private final Chat selfChat;
 
     @Inject
     public XmppConnector(XmppCfg cfg,
