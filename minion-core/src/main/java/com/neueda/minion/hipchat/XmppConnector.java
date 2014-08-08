@@ -26,6 +26,8 @@ public class XmppConnector {
     private final Logger logger = LoggerFactory.getLogger(XmppConnector.class);
     private final Map<String, MultiUserChat> rooms = new HashMap<>();
     private final ScheduledExecutorService scheduler;
+    private final String host;
+    private final int port;
     private final String username;
     private final String password;
     private final XMPPTCPConnection xmpp;
@@ -36,8 +38,8 @@ public class XmppConnector {
                          @Named("scheduler.keepAlive") ScheduledExecutorService scheduler,
                          @Assisted String jid) {
         this.scheduler = scheduler;
-        String host = cfg.getHost();
-        int port = cfg.getPort();
+        host = cfg.getHost();
+        port = cfg.getPort();
         ConnectionConfiguration config = new ConnectionConfiguration(host, port);
         username = String.format("%s@%s", jid, host);
         password = cfg.getPassword();
@@ -52,8 +54,6 @@ public class XmppConnector {
     }
 
     private void connectAndLogin() {
-        String host = xmpp.getHost();
-        int port = xmpp.getPort();
         String usernameWithResource = username + "/bot";
         logger.info("Connecting as {} to xmpp://{}:{}", usernameWithResource, host, port);
         try {

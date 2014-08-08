@@ -17,7 +17,7 @@ define(function() {
         return configuration[key] || fallback;
     };
     Minion.cfg.asNumber = function(key, fallback) {
-        var value = this.getString(key, fallback);
+        var value = this.asString(key, fallback);
         return  value != null ? +value : null;
     };
 
