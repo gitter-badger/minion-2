@@ -18,6 +18,7 @@
         <module>minion-ext-player-radio</module>
         <module>minion-ext-player-sfx</module>
         <module>minion-ext-player-tts</module>
+        <module>minion-ext-lmgtfy</module>
 
         <module>minion-dist</module>
     </modules>
