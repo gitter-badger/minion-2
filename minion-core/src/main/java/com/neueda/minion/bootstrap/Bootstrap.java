@@ -12,9 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.List;
@@ -50,7 +47,11 @@ public final class Bootstrap {
 
     private void tryStart() throws Exception {
         logger.info("Starting up Neueda Minion");
-        Properties configuration = loadConfiguration();
+
+        ConfigurationLoader loader = new ConfigurationLoader();
+        loader.loadFromFile(new File("minion.properties"));
+        loader.loadFromEnv();
+        Properties configuration = loader.getProperties();
 
         Path root = FileSystems.getDefault().getPath(".").toAbsolutePath();
         ExtensionLoader extensionLoader = new ExtensionLoader();
@@ -82,18 +83,6 @@ public final class Bootstrap {
         logger.info("Shutting down");
         lifecycleManager.close();
         injector = null;
-    }
-
-    private static Properties loadConfiguration() throws IOException {
-        File configFile = new File("minion.properties");
-        if (!configFile.exists()) {
-            throw new RuntimeException("Configuration file not found: " + configFile.getAbsolutePath());
-        }
-        Properties properties = new Properties();
-        try (InputStream is = new FileInputStream(configFile)) {
-            properties.load(is);
-        }
-        return properties;
     }
 
 
