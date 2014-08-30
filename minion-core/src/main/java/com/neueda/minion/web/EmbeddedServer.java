@@ -79,6 +79,7 @@ public class EmbeddedServer {
 
         server.setHandler(contextHandlers);
         server.start();
+        server.join();
     }
 
     private ContextHandler getContext(
