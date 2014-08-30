@@ -1,6 +1,9 @@
 package com.neueda.minion.hipchat.cfg;
 
+import com.google.common.base.Preconditions;
 import com.netflix.governator.annotations.Configuration;
+
+import javax.annotation.PostConstruct;
 
 public final class XmppCfg {
 
@@ -12,6 +15,13 @@ public final class XmppCfg {
 
     @Configuration("xmpp.password")
     private String password;
+
+    @PostConstruct
+    public void validate() {
+        Preconditions.checkNotNull(host, "\"xmpp.host\" not configured");
+        Preconditions.checkNotNull(port, "\"xmpp.port\" not configured");
+        Preconditions.checkNotNull(password, "\"xmpp.password\" not configured");
+    }
 
     public String getHost() {
         return host;

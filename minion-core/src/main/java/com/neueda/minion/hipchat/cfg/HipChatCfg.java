@@ -1,8 +1,10 @@
 package com.neueda.minion.hipchat.cfg;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.netflix.governator.annotations.Configuration;
 
+import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,6 +21,13 @@ public final class HipChatCfg {
 
     @Configuration("hipChat.rooms")
     private String rooms;
+
+    @PostConstruct
+    public void validate() {
+        Preconditions.checkNotNull(target, "\"hipChat.target\" not configured");
+        Preconditions.checkNotNull(email, "\"hipChat.email\" not configured");
+        Preconditions.checkNotNull(token, "\"hipChat.token\" not configured");
+    }
 
     public String getTarget() {
         return target;
