@@ -22,6 +22,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.URL;
 import java.util.Map;
 import java.util.Set;
@@ -34,6 +35,7 @@ public class EmbeddedServer {
 
     private final Logger logger = LoggerFactory.getLogger(EmbeddedServer.class);
     private final int port;
+    private final String host;
     private final Set<WebResource> webResources;
     private final Map<UUID, ClassLoader> extensionClassLoaders;
     private Server server;
@@ -42,6 +44,7 @@ public class EmbeddedServer {
     public EmbeddedServer(EmbeddedServerCfg cfg,
                           Set<WebResource> webResources,
                           @Named("extension") Map<UUID, ClassLoader> extensionClassLoaders) {
+        host = cfg.getHost();
         port = cfg.getPort();
         this.webResources = webResources;
         this.extensionClassLoaders = extensionClassLoaders;
@@ -49,7 +52,8 @@ public class EmbeddedServer {
 
     @WarmUp
     void start() throws Exception {
-        server = new Server(port);
+        server = new Server(new InetSocketAddress(host, port));
+
         ContextHandlerCollection contextHandlers = new ContextHandlerCollection();
 
         ContextHandler rootResourceContext =
