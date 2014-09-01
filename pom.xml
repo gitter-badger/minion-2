@@ -13,6 +13,7 @@
         <module>minion-api</module>
         <module>minion-core</module>
         <module>minion-test</module>
+        <module>minion-ext-scripting</module>
         <module>minion-ext-broadcast</module>
         <module>minion-ext-player</module>
         <module>minion-ext-player-radio</module>

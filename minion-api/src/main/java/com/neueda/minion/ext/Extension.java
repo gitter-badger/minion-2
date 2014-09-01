@@ -19,7 +19,7 @@ public abstract class Extension {
     @Inject
     protected MessageBus messageBus;
 
-    public void initialize() {
+    public void initialize() throws Exception {
     }
 
     public String getQualifier() {
