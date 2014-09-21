@@ -29,11 +29,13 @@ public final class Bootstrap {
         Bootstrap bootstrap = new Bootstrap();
         try {
             bootstrap.start();
-            System.out.println("Up and running; press <Enter> to quit");
-            System.in.read();
         } catch (Exception ignored) {
         }
-        bootstrap.stop();
+        if (System.getProperty("interactive") != null) {
+            System.out.println("Up and running; press <Enter> to quit");
+            System.in.read();
+            bootstrap.stop();
+        }
     }
 
     public void start() {
