@@ -66,8 +66,13 @@ public class Minion implements ChatMessageListener {
         UserResponse user = hipChat.getUser(email);
         self = user.getName();
         for (Extension extension : extensions) {
-            logger.info("Initializing extension: {}", extension.getClass().getName());
-            extension.initialize();
+            String name = extension.getClass().getName();
+            logger.info("Initializing extension: {}", name);
+            try {
+                extension.initialize();
+            } catch (Exception e) {
+                logger.error("Failed to load extension: {}", name, e);
+            }
         }
         XmppConnector xmpp = xmppFactory.create(user.getXmppJid());
         xmpp.connect(this);

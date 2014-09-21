@@ -14,12 +14,12 @@ public abstract class Extension {
     public static final String HIPCHAT_MESSAGE = "com.neueda.minion.hipChat.message";
     public static final String HIPCHAT_REPLY = "com.neueda.minion.hipChat.reply";
     public static final String HIPCHAT_NOTIFICATION = "com.neueda.minion.hipChat.notification";
-    public static final String WEB_EVENT = "com.neueda.minion.web.event";
+    public static final String SERVER_SENT_EVENT = "com.neueda.minion.web.event";
 
     @Inject
     protected MessageBus messageBus;
 
-    public void initialize() {
+    public void initialize() throws Exception {
     }
 
     public String getQualifier() {
@@ -49,8 +49,8 @@ public abstract class Extension {
                 .build());
     }
 
-    protected void webEvent(String event, Object data) {
-        messageBus.publish(WEB_EVENT, dataBuilder()
+    protected void serverSentEvent(String event, Object data) {
+        messageBus.publish(SERVER_SENT_EVENT, dataBuilder()
                 .put("event", event)
                 .put("data", data)
                 .build());

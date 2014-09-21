@@ -44,7 +44,7 @@ public class PlayerExtension extends Extension {
         Matcher matcher = STOP_PATTERN.matcher(body);
         if (matcher.matches()) {
             nowPlaying = null;
-            webEvent(PLAYER_EVENT, new PlayerStop());
+            serverSentEvent(PLAYER_EVENT, new PlayerStop());
         }
     }
 
@@ -54,7 +54,7 @@ public class PlayerExtension extends Extension {
     }
 
     private void handlePlayerAction(PlayerAction action) {
-        webEvent(PLAYER_EVENT, action);
+        serverSentEvent(PLAYER_EVENT, action);
     }
 
 }
