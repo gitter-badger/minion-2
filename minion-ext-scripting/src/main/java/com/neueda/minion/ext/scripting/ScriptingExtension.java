@@ -74,7 +74,8 @@ public class ScriptingExtension extends Extension {
             String script = entry.getValue();
             try {
                 SimpleBindings bindings = new SimpleBindings();
-                bindings.put("message", message);
+                bindings.put("from", message.getFrom());
+                bindings.put("message", message.getBody());
                 bindings.put("minion", new MinionScriptWrapper(messageBus, message));
                 engine.eval(script, bindings);
             } catch (ScriptException e) {

@@ -23,4 +23,19 @@ public class MinionScriptWrapper {
                 .build());
     }
 
+    public void notify(String text) {
+        messageBus.publish(Extension.HIPCHAT_NOTIFICATION, dataBuilder()
+                .put("color", "yellow")
+                .put("text", text)
+                .put("notify", true)
+                .build());
+    }
+
+    public void sse(String event, Object data) {
+        messageBus.publish(Extension.SERVER_SENT_EVENT, dataBuilder()
+                .put("event", event)
+                .put("data", data)
+                .build());
+    }
+
 }
