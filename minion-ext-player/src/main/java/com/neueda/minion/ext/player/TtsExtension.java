@@ -1,4 +1,4 @@
-package com.neueda.minion.ext.player.tts;
+package com.neueda.minion.ext.player;
 
 import com.google.common.collect.ImmutableMap;
 import com.neueda.minion.ext.Extension;
@@ -9,10 +9,9 @@ import java.util.regex.Pattern;
 
 import static com.neueda.minion.ext.messaging.MessageBus.dataBuilder;
 
-public class PlayerTtsExtension extends Extension {
+public class TtsExtension extends Extension {
 
     private static final Pattern PATTERN = Pattern.compile("say\\s*(?:,\\s*([^:]+)\\s*)?:\\s*(.+)\\s*");
-    private static final String TTS_MESSAGE = "com.neueda.minion.ext.player.tts";
 
     @Override
     public void initialize() {
@@ -29,7 +28,7 @@ public class PlayerTtsExtension extends Extension {
             if (voice != null) {
                 builder.put("voice", voice.toLowerCase());
             }
-            messageBus.publish(TTS_MESSAGE, builder.build());
+            messageBus.publish(Messages.TTS_MESSAGE, builder.build());
         }
     }
 

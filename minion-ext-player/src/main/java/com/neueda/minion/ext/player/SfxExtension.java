@@ -1,4 +1,4 @@
-package com.neueda.minion.ext.player.sfx;
+package com.neueda.minion.ext.player;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
@@ -15,13 +15,12 @@ import java.util.regex.Pattern;
 
 import static com.neueda.minion.ext.messaging.MessageBus.dataBuilder;
 
-public class PlayerSfxExtension extends Extension {
+public class SfxExtension extends Extension {
 
     private static final Pattern PATTERN = Patterns.preamble("sfx");
     private static final String SFX_RESOURCE_PATH = "com/neueda/minion/web/player/sfx/%s.mp3";
     private static final String SFX_FILE_PATH = "sfx/%s.mp3";
     private static final String SFX_WEB_PATH = "/player/sfx/%s/%s.mp3";
-    private static final String SFX_MESSAGE = "com.neueda.minion.ext.player.sfx";
 
     @Override
     public void initialize() {
@@ -39,7 +38,7 @@ public class PlayerSfxExtension extends Extension {
             } else {
                 String type = locateSfx(name);
                 if (type != null) {
-                    messageBus.publish(SFX_MESSAGE, dataBuilder()
+                    messageBus.publish(Messages.SFX_MESSAGE, dataBuilder()
                             .put("path", String.format(SFX_WEB_PATH, type, name))
                             .put("cached", true)
                             .build());

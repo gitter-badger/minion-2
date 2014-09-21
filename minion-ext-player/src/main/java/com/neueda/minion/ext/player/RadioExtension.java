@@ -1,4 +1,4 @@
-package com.neueda.minion.ext.player.radio;
+package com.neueda.minion.ext.player;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
@@ -23,13 +23,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PlayerRadioExtension extends Extension {
+public class RadioExtension extends Extension {
 
     private static final String DEFAULT_STREAM_FORMAT = "mp3";
     private static final Pattern PATTERN = Patterns.preamble("play");
-    private static final String STREAM_MESSAGE = "com.neueda.minion.ext.player.stream";
 
-    private final Logger logger = LoggerFactory.getLogger(PlayerRadioExtension.class);
+    private final Logger logger = LoggerFactory.getLogger(RadioExtension.class);
     private final Map<String, Map<String, Object>> streams = new ConcurrentHashMap<>();
 
     @Inject
@@ -76,7 +75,7 @@ public class PlayerRadioExtension extends Extension {
             } else {
                 Map<String, Object> stream = streams.get(name);
                 if (stream != null) {
-                    messageBus.publish(STREAM_MESSAGE, stream);
+                    messageBus.publish(Messages.STREAM_MESSAGE, stream);
                     hipChatReply(sender, "(doge) wow! playing \"" + name + "\"");
                 } else {
                     hipChatReply(sender, "(doge) no stream named \"" + name + "\"");

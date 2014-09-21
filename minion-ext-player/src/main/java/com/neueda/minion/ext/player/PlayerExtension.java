@@ -13,10 +13,6 @@ import java.util.regex.Pattern;
 public class PlayerExtension extends Extension {
 
     private static final String PLAYER_EVENT = "com.neueda.minion.ext.player";
-    private static final String STREAM_MESSAGE = "com.neueda.minion.ext.player.stream";
-    private static final String SFX_MESSAGE = "com.neueda.minion.ext.player.sfx";
-    private static final String TTS_MESSAGE = "com.neueda.minion.ext.player.tts";
-
     private static final Pattern STOP_PATTERN = Patterns.sentence("stop!");
 
     private PlayerStream nowPlaying;
@@ -24,9 +20,9 @@ public class PlayerExtension extends Extension {
     @Override
     public void initialize() {
         onHipChatMessage(this::handleMessage);
-        messageBus.subscribe(STREAM_MESSAGE, this::handlePlayerStream, new PlayerStream.Reader());
-        messageBus.subscribe(SFX_MESSAGE, this::handlePlayerAction, new PlayerSoundEffect.Reader());
-        messageBus.subscribe(TTS_MESSAGE, this::handlePlayerAction, new PlayerSpeech.Reader());
+        messageBus.subscribe(Messages.STREAM_MESSAGE, this::handlePlayerStream, new PlayerStream.Reader());
+        messageBus.subscribe(Messages.SFX_MESSAGE, this::handlePlayerAction, new PlayerSoundEffect.Reader());
+        messageBus.subscribe(Messages.TTS_MESSAGE, this::handlePlayerAction, new PlayerSpeech.Reader());
     }
 
     @Override
