@@ -10,6 +10,7 @@ import com.neueda.minion.ext.HipChatMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.script.*;
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +22,13 @@ public class ScriptingExtension extends Extension {
 
     private final Logger logger = LoggerFactory.getLogger(ScriptingExtension.class);
     private Multimap<ScriptEngine, String> scripts;
+
+    private final MinionScriptWrapperFactory wrapperFactory;
+
+    @Inject
+    public ScriptingExtension(MinionScriptWrapperFactory wrapperFactory) {
+        this.wrapperFactory = wrapperFactory;
+    }
 
     @Override
     public void initialize() throws IOException {
@@ -76,7 +84,7 @@ public class ScriptingExtension extends Extension {
                 SimpleBindings bindings = new SimpleBindings();
                 bindings.put("from", message.getFrom());
                 bindings.put("message", message.getBody());
-                bindings.put("minion", new MinionScriptWrapper(messageBus, message));
+                bindings.put("minion", wrapperFactory.create(message));
                 engine.eval(script, bindings);
             } catch (ScriptException e) {
                 logger.error("Script failed", e);
