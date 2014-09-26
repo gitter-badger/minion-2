@@ -1,0 +1,26 @@
+#!/bin/bash
+
+echo "Release minion..."
+echo "--> Build jars"
+mvn clean install && cd dist
+
+echo "--> Upload jars"
+scp *.jar minion:~/app/minion
+
+echo "--> Upload scripts"
+ssh minion <<'ENDSSH'
+cd ~/app/minion && rm -rfv scripts
+ENDSSH
+scp -r scripts minion:~/app/minion/
+
+echo "--> Upload misc"
+scp streams.csv minion:~/app/minion
+
+echo "--> Restart minion"
+ssh minion <<'ENDSSH'
+echo "PRESS ENTER"
+service minion stop
+service minion start
+ENDSSH
+
+cd ..
