@@ -1,0 +1,18 @@
+#!/bin/bash
+# Minion
+#
+# description: start|stop minion
+
+case $1 in
+    start)
+        /bin/bash /usr/local/bin/minion-start.sh
+    ;;
+    stop)
+        /bin/bash /usr/local/bin/minion-stop.sh
+    ;;
+    restart)
+        /bin/bash /usr/local/bin/minion-stop.sh
+        /bin/bash /usr/local/bin/minion-start.sh
+    ;;
+esac
+exit 0
