@@ -1,4 +1,5 @@
 # Neueda Minion (HipChat bot)
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/neueda/minion?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Standard bot extensions:
 
